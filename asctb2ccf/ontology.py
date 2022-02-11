@@ -47,10 +47,17 @@ class BSOntology:
         anatomical_structures = obj['anatomical_structures']
         if not anatomical_structures:
             raise ValueError("Anatomical structure data are missing")
+
         last_anatomical_structure = anatomical_structures[-1]
         anatomical_structure_id = last_anatomical_structure['id']
+        if not anatomical_structure_id:
+            raise ValueError("Anatomical structure has empty identifier")
+        anatomical_structure_label = last_anatomical_structure['rdfs_label']
+        if not anatomical_structure_label:
+            raise ValueError("Anatomical structure has empty label")
+
         iri = URIRef(self._expand_uberon_id(anatomical_structure_id))
-        label = Literal(last_anatomical_structure['rdfs_label'])
+        label = Literal(anatomical_structure_label)
         anatomical_structure = Class(iri, graph=self.graph)
         self.graph.add((iri, RDFS.label, label))
 
