@@ -18,8 +18,8 @@ class AsctbReporterClient:
     _OUTPUT = "output"
     _CSV_URL = "csvUrl"
 
-    def __init__(self, organ_to_ids_dict):
-        self.organ_to_ids_dict = organ_to_ids_dict
+    def __init__(self, organ_to_sheet_dict):
+        self.organ_to_sheet_dict = organ_to_sheet_dict
 
     def get_data(self, organ_name, format="json"):
         """Returns the ontology resource in JSON-LD format given
@@ -39,8 +39,6 @@ class AsctbReporterClient:
         return response
 
     def get_export_csv_url(self, organ_name):
-        id_comp = self.organ_to_ids_dict[organ_name]['id_comp']
-        spreadsheet_id = id_comp[0]
-        sheet_id = id_comp[1]
-        csvUrl = f'https://docs.google.com/spreadsheets/d/{spreadsheet_id}/export?format=csv&gid={sheet_id}'
-        return quote_plus(csvUrl)
+        sheet_url = self.organ_to_sheet_dict[organ_name]['latest']
+        export_url = sheet_url.replace('edit#', 'export?')
+        return quote_plus(f'{export_url}&format=csv')
