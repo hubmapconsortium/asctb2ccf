@@ -83,7 +83,7 @@ class BSOntology:
 
         term_id = Literal(cell_type_id)
         iri = URIRef(self._expand_cl_id(cell_type_id))
-        label = Literal(last_cell_type['rdfs_label'])
+        label = Literal(cell_type_label)
         cell_type = Class(iri, graph=self.graph)
         self.graph.add((iri, RDFS.label, label))
         self.graph.add((iri, OBOINOWL.id, term_id))
