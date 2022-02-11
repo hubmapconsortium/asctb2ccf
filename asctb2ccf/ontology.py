@@ -136,7 +136,7 @@ class BSOntology:
         ######################################################
         for marker in obj['biomarkers_protein']:
             marker_id = marker['id']
-            if marker_id and "HGNC" in marker_id:
+            if marker_id and "HGNC:" in marker_id:
                 marker_name = marker['name']
                 term_id = Literal(marker_id)
                 iri = URIRef(marker_id)
@@ -164,7 +164,7 @@ class BSOntology:
                     CCF.has_member,
                     Class(
                         URIRef(marker['id']), graph=self.graph
-                    )) for marker in biomarkers],
+                    )) for marker in biomarkers if "HGNC:" in marker['id']],
                 graph=self.graph
             )]
 
