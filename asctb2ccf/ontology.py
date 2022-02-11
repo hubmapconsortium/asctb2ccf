@@ -50,11 +50,13 @@ class BSOntology:
 
         last_anatomical_structure = anatomical_structures[-1]
         anatomical_structure_id = last_anatomical_structure['id']
+        anatomical_structure_name = last_anatomical_structure['name']
         if not anatomical_structure_id:
-            raise ValueError("Anatomical structure has empty identifier")
+            anatomical_structure_id =\
+                self._generate_provisional_id(anatomical_structure_name)
         anatomical_structure_label = last_anatomical_structure['rdfs_label']
         if not anatomical_structure_label:
-            raise ValueError("Anatomical structure has empty label")
+            anatomical_structure_label = anatomical_structure_name
 
         iri = URIRef(self._expand_uberon_id(anatomical_structure_id))
         label = Literal(anatomical_structure_label)
@@ -70,11 +72,12 @@ class BSOntology:
 
         last_cell_type = cell_types[-1]
         cell_type_id = last_cell_type['id']
+        cell_type_name = last_cell_type['name']
         if not cell_type_id:
-            raise ValueError("Cell type has empty identifier")
+            cell_type_id = self._generate_provisional_id(cell_type_name)
         cell_type_label = last_cell_type['rdfs_label']
         if not cell_type_label:
-            raise ValueError("Cell type has empty label")
+            cell_type_label = cell_type_name
 
         cell_type_iri = URIRef(self._expand_cl_id(cell_type_id))
         label = Literal(last_cell_type['rdfs_label'])
@@ -187,6 +190,13 @@ class BSOntology:
                         self.graph.add((bn, DCTERMS.references, iri))
 
         return BSOntology(self.graph)
+
+    def _generate_provisional_id(self, str):
+        str = str.strip()
+        str = lowercase(str)
+        str = re.sub('\\s+', '-', str)
+        str = re.sub('[^a-z0-9-]+', '', str)
+        return f'https://purl.org/ccf/ASCTB-TEMP_{str}'
 
     def _some_values_from(self, property, filler):
         return Restriction(property,
