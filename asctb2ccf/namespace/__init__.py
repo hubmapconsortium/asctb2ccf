@@ -126,3 +126,4 @@ class DefinedNamespace(metaclass=DefinedNamespaceMeta):
 
 from asctb2ccf.namespace._CCF import CCF
 from asctb2ccf.namespace._OBO import OBO
+from asctb2ccf.namespace._OBOINOWL import OBOINOWL

@@ -1,4 +1,4 @@
-from asctb2ccf.namespace import OBO, CCF
+from asctb2ccf.namespace import OBO, CCF, OBOINOWL
 
 from string import punctuation
 from stringcase import lowercase, snakecase
@@ -58,10 +58,12 @@ class BSOntology:
         if not anatomical_structure_label:
             anatomical_structure_label = anatomical_structure_name
 
+        term_id = Literal(anatomical_structure_id)
         iri = URIRef(self._expand_uberon_id(anatomical_structure_id))
         label = Literal(anatomical_structure_label)
         anatomical_structure = Class(iri, graph=self.graph)
         self.graph.add((iri, RDFS.label, label))
+        self.graph.add((iri, OBOINOWL.id, term_id))
 
         ######################################################
         # Construct the axioms about cell types
@@ -79,10 +81,12 @@ class BSOntology:
         if not cell_type_label:
             cell_type_label = cell_type_name
 
-        cell_type_iri = URIRef(self._expand_cl_id(cell_type_id))
+        term_id = Literal(cell_type_id)
+        iri = URIRef(self._expand_cl_id(cell_type_id))
         label = Literal(last_cell_type['rdfs_label'])
-        cell_type = Class(cell_type_iri, graph=self.graph)
-        self.graph.add((cell_type_iri, RDFS.label, label))
+        cell_type = Class(iri, graph=self.graph)
+        self.graph.add((iri, RDFS.label, label))
+        self.graph.add((iri, OBOINOWL.id, term_id))
 
         ######################################################
         # Construct the "cell type 'located in' anatomical_entity" axiom
@@ -109,13 +113,15 @@ class BSOntology:
         # Construct the "cell type 'has gene marker' gene" axioms
         ######################################################
         for marker in obj['biomarkers_gene']:
-            if marker:
-                marker_iri = marker['id']
+            marker_id = marker['id']
+            if marker_id and "HGNC:" in marker_id:
                 marker_name = marker['name']
-                iri = URIRef(marker_iri)
+                term_id = Literal(marker_id)
+                iri = URIRef(marker_id)
                 label = Literal(marker_name)
                 cls_gm = Class(iri, graph=self.graph)
                 self.graph.add((iri, RDFS.label, label))
+                self.graph.add((iri, OBOINOWL.id, term_id))
                 cell_type.subClassOf =\
                     [self._some_values_from(
                         CCF.cell_type_has_gene_marker,
@@ -129,13 +135,15 @@ class BSOntology:
         # Construct the "cell type 'has protein marker' gene" axioms
         ######################################################
         for marker in obj['biomarkers_protein']:
-            if marker:
-                marker_iri = marker['id']
+            marker_id = marker['id']
+            if marker_id and "HGNC" in marker_id:
                 marker_name = marker['name']
-                iri = URIRef(marker_iri)
+                term_id = Literal(marker_id)
+                iri = URIRef(marker_id)
                 label = Literal(marker_name)
                 cls_pm = Class(iri, graph=self.graph)
                 self.graph.add((iri, RDFS.label, label))
+                self.graph.add((iri, OBOINOWL.id, term_id))
                 cell_type.subClassOf =\
                     [self._some_values_from(
                         CCF.cell_type_has_protein_marker,
@@ -172,6 +180,7 @@ class BSOntology:
         references = obj['references']
         if references:
             bn = BNode()
+            cell_type_iri = URIRef(self._expand_cl_id(cell_type_id))
             self.graph.add((bn, RDF.type, OWL.Axiom))
             self.graph.add((bn, OWL.annotatedSource,
                            cell_type_iri))
@@ -196,7 +205,7 @@ class BSOntology:
         str = lowercase(str)
         str = re.sub('\\s+', '-', str)
         str = re.sub('[^a-z0-9-]+', '', str)
-        return f'https://purl.org/ccf/ASCTB-TEMP_{str}'
+        return f'ASCTB-TEMP:{str}'
 
     def _some_values_from(self, property, filler):
         return Restriction(property,
@@ -208,14 +217,25 @@ class BSOntology:
         return str.translate(str.maketrans('', '', punctuation_excl_dash))
 
     def _expand_uberon_id(self, str):
-        uberon_pattern = re.compile("UBERON:", re.IGNORECASE)
-        return uberon_pattern.sub(
-            "http://purl.obolibrary.org/obo/UBERON_", str)
+        if "ASCTB-TEMP:" in str:
+            return self._expand_asctb_temp_id(str)
+        else:
+            uberon_pattern = re.compile("UBERON:", re.IGNORECASE)
+            return uberon_pattern.sub(
+                "http://purl.obolibrary.org/obo/UBERON_", str)
 
     def _expand_cl_id(self, str):
-        cl_pattern = re.compile("CL:", re.IGNORECASE)
-        return cl_pattern.sub(
-            "http://purl.obolibrary.org/obo/CL_", str)
+        if "ASCTB-TEMP:" in str:
+            return self._expand_asctb_temp_id(str)
+        else:
+            cl_pattern = re.compile("CL:", re.IGNORECASE)
+            return cl_pattern.sub(
+                "http://purl.obolibrary.org/obo/CL_", str)
+
+    def _expand_asctb_temp_id(self, str):
+        asctb_temp_pattern = re.compile("ASCTB-TEMP:", re.IGNORECASE)
+        return asctb_temp_pattern.sub(
+            "https://purl.org/ccf/ASCTB-TEMP_", str)
 
     def _expand_doi(self, str):
         doi_pattern = re.compile("doi:\\s*", re.IGNORECASE)
