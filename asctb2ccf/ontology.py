@@ -124,11 +124,11 @@ class BSOntology:
                 self.graph.add((iri, OBOINOWL.id, term_id))
                 cell_type.subClassOf =\
                     [self._some_values_from(
-                        CCF.cell_type_has_gene_marker,
+                        CCF.has_gene_marker,
                         cls_gm)]
                 cls_gm.subClassOf =\
                     [self._some_values_from(
-                        CCF.is_gene_marker_of_cell_type,
+                        CCF.is_gene_marker_of,
                         cell_type)]
 
         ######################################################
@@ -146,11 +146,11 @@ class BSOntology:
                 self.graph.add((iri, OBOINOWL.id, term_id))
                 cell_type.subClassOf =\
                     [self._some_values_from(
-                        CCF.cell_type_has_protein_marker,
+                        CCF.has_protein_marker,
                         cls_pm)]
                 cls_pm.subClassOf =\
                     [self._some_values_from(
-                        CCF.is_protein_marker_of_cell_type,
+                        CCF.is_protein_marker_of,
                         cell_type)]
 
         ######################################################
@@ -170,7 +170,7 @@ class BSOntology:
 
         characterizing_biomarker_set_expression =\
             self._some_values_from(
-                CCF.cell_type_has_characterizing_biomarker_set,
+                CCF.has_characterizing_biomarker_set,
                 characterizing_biomarker_set)
         cell_type.subClassOf = [characterizing_biomarker_set_expression]
 

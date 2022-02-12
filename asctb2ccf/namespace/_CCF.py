@@ -12,13 +12,13 @@ class CCF(DefinedNamespace):
     # http://www.w3.org/2002/07/owl#ObjectProperty
     has_member: URIRef
     located_in: URIRef
-    cell_type_has_gene_marker: URIRef
-    cell_type_has_protein_marker: URIRef
-    is_biomarker_of_cell_type: URIRef
-    is_gene_marker_of_cell_type: URIRef
-    is_protein_marker_of_cell_type: URIRef
-    cell_type_has_characterizing_biomarker_set: URIRef
-    is_characterizing_biomarker_set_of_cell_type: URIRef
+    has_gene_marker: URIRef
+    has_protein_marker: URIRef
+    is_biomarker_of: URIRef
+    is_gene_marker_of: URIRef
+    is_protein_marker_of: URIRef
+    has_characterizing_biomarker_set: URIRef
+    is_characterizing_biomarker_set_of: URIRef
     belongs_to_extraction_set: URIRef
     extraction_set_for: URIRef
     representation_of: URIRef
@@ -60,5 +60,6 @@ class CCF(DefinedNamespace):
     spatial_entity: URIRef
     spatial_object_reference: URIRef
     spatial_placement: URIRef
+    biomarker: URIRef
 
     _NS = Namespace("https://purl.org/ccf/latest/ccf.owl#")
