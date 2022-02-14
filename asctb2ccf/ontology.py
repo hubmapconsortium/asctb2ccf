@@ -119,7 +119,8 @@ class BSOntology:
                 term_id = Literal(marker_id)
                 iri = URIRef(marker_id)
                 label = Literal(marker_name)
-                cls_gm = Class(iri, graph=self.graph)
+                cls_gm = Class(iri, subClassOf=[CCF.biomarker],
+                               graph=self.graph)
                 self.graph.add((iri, RDFS.label, label))
                 self.graph.add((iri, OBOINOWL.id, term_id))
                 cell_type.subClassOf =\
@@ -141,7 +142,8 @@ class BSOntology:
                 term_id = Literal(marker_id)
                 iri = URIRef(marker_id)
                 label = Literal(marker_name)
-                cls_pm = Class(iri, graph=self.graph)
+                cls_pm = Class(iri, subClassOf=[CCF.biomarker],
+                               graph=self.graph)
                 self.graph.add((iri, RDFS.label, label))
                 self.graph.add((iri, OBOINOWL.id, term_id))
                 cell_type.subClassOf =\
