@@ -59,7 +59,7 @@ class BSOntology:
             anatomical_structure_label = anatomical_structure_name
 
         term_id = Literal(anatomical_structure_id)
-        iri = URIRef(self._expand_uberon_id(anatomical_structure_id))
+        iri = URIRef(self._expand_anatomical_entity_id(anatomical_structure_id))
         label = Literal(anatomical_structure_label)
         anatomical_structure = Class(iri, graph=self.graph)
         self.graph.add((iri, RDFS.label, label))
@@ -82,7 +82,7 @@ class BSOntology:
             cell_type_label = cell_type_name
 
         term_id = Literal(cell_type_id)
-        iri = URIRef(self._expand_cl_id(cell_type_id))
+        iri = URIRef(self._expand_cell_type_id(cell_type_id))
         label = Literal(cell_type_label)
         cell_type = Class(iri, graph=self.graph)
         self.graph.add((iri, RDFS.label, label))
@@ -159,22 +159,26 @@ class BSOntology:
         # Construct the "cell type 'has protein marker' gene" axioms
         ######################################################
         biomarkers = obj['biomarkers']
-        characterizing_biomarker_set.equivalentClass =\
-            [BooleanClass(
-                operator=OWL.intersectionOf,
-                members=[self._some_values_from(
-                    CCF.has_member,
-                    Class(
-                        URIRef(marker['id']), graph=self.graph
-                    )) for marker in biomarkers if "HGNC:" in marker['id']],
-                graph=self.graph
-            )]
+        valid_biomarkers = [marker for marker in biomarkers
+                            if "HGNC:" in marker['id']]
 
-        characterizing_biomarker_set_expression =\
-            self._some_values_from(
-                CCF.has_characterizing_biomarker_set,
-                characterizing_biomarker_set)
-        cell_type.subClassOf = [characterizing_biomarker_set_expression]
+        # Apply when the valid biomarkers are not empty
+        if valid_biomarkers:
+            characterizing_biomarker_set.equivalentClass =\
+                [BooleanClass(
+                    operator=OWL.intersectionOf,
+                    members=[self._some_values_from(
+                        CCF.has_member,
+                        Class(
+                            URIRef(marker['id']), graph=self.graph
+                        )) for marker in valid_biomarkers],
+                    graph=self.graph
+                )]
+            characterizing_biomarker_set_expression =\
+                self._some_values_from(
+                    CCF.has_characterizing_biomarker_set,
+                    characterizing_biomarker_set)
+            cell_type.subClassOf = [characterizing_biomarker_set_expression]
 
         ######################################################
         # Construct the reference annotation
@@ -182,7 +186,7 @@ class BSOntology:
         references = obj['references']
         if references:
             bn = BNode()
-            cell_type_iri = URIRef(self._expand_cl_id(cell_type_id))
+            cell_type_iri = URIRef(self._expand_cell_type_id(cell_type_id))
             self.graph.add((bn, RDF.type, OWL.Axiom))
             self.graph.add((bn, OWL.annotatedSource,
                            cell_type_iri))
@@ -218,21 +222,35 @@ class BSOntology:
         punctuation_excl_dash = punctuation.replace('-', '')
         return str.translate(str.maketrans('', '', punctuation_excl_dash))
 
-    def _expand_uberon_id(self, str):
+    def _expand_anatomical_entity_id(self, str):
         if "ASCTB-TEMP:" in str:
             return self._expand_asctb_temp_id(str)
-        else:
-            uberon_pattern = re.compile("UBERON:", re.IGNORECASE)
-            return uberon_pattern.sub(
-                "http://purl.obolibrary.org/obo/UBERON_", str)
+        elif "FMA:" in str:
+            return self._expand_fma_id(str)
+        elif "UBERON:" in str:
+            return self._expand_uberon_id(str)
+        return str
+
+    def _expand_fma_id(self, str):
+        fma_pattern = re.compile("FMA:", re.IGNORECASE)
+        return fma_pattern.sub(
+            "http://purl.org/sig/ont/fma/fma", str)
+
+    def _expand_uberon_id(self, str):
+        uberon_pattern = re.compile("UBERON:", re.IGNORECASE)
+        return uberon_pattern.sub(
+            "http://purl.obolibrary.org/obo/UBERON_", str)
+
+    def _expand_cell_type_id(self, str):
+        if "ASCTB-TEMP:" in str:
+            return self._expand_asctb_temp_id(str)
+        elif "CL:" in str:
+            return self._expand_cl_id(str)
 
     def _expand_cl_id(self, str):
-        if "ASCTB-TEMP:" in str:
-            return self._expand_asctb_temp_id(str)
-        else:
-            cl_pattern = re.compile("CL:", re.IGNORECASE)
-            return cl_pattern.sub(
-                "http://purl.obolibrary.org/obo/CL_", str)
+        cl_pattern = re.compile("CL:", re.IGNORECASE)
+        return cl_pattern.sub(
+            "http://purl.obolibrary.org/obo/CL_", str)
 
     def _expand_asctb_temp_id(self, str):
         asctb_temp_pattern = re.compile("ASCTB-TEMP:", re.IGNORECASE)
