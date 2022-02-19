@@ -1,6 +1,6 @@
 # CEDAR-to-CCF
 
-A Python tool to convert ASCT+B tables to CCF Biological Structure Ontology.
+A Python tool to convert ASCT+B tables to CCF Biological Structure Ontology on the cell type and biomarkers relationships.
 
 The CCF Biological Structure Ontology (CCF-BSO) models the relationship between a human cell type and its characterizing biomarkers. Each anatomical structure in the human body consists of different cell types and the same cell types might exist in multiple organ locations. The CCF-BSO makes the distinction between the cell types that are found in several locations by naming them differently, for example, the 'fibroblast' cell has various names such as "fibroblast of anterior cardiac vein", "fibroblast of coronary sinus", "fibroblast of epicardium", etc. The distinction is important in developing a human atlas because those cells may inherit different properties, such as their characterizing biomarkers.
 
