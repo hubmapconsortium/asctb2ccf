@@ -246,11 +246,18 @@ class BSOntology:
             return self._expand_asctb_temp_id(str)
         elif "CL:" in str:
             return self._expand_cl_id(str)
+        elif "LMHA:" in str:
+            return self._expand_lmha_id(str)
 
     def _expand_cl_id(self, str):
         cl_pattern = re.compile("CL:", re.IGNORECASE)
         return cl_pattern.sub(
             "http://purl.obolibrary.org/obo/CL_", str)
+
+    def _expand_lmha_id(self, str):
+        lmha_pattern = re.compile("LMHA:", re.IGNORECASE)
+        return lmha_pattern.sub(
+            "http://purl.obolibrary.org/obo/LMHA_", str)
 
     def _expand_asctb_temp_id(self, str):
         asctb_temp_pattern = re.compile("ASCTB-TEMP:", re.IGNORECASE)
