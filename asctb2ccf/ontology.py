@@ -75,7 +75,7 @@ class BSOntology:
         last_cell_type = cell_types[-1]
         cell_type_id = last_cell_type['id']
         cell_type_name = last_cell_type['name']
-        if not cell_type_id:
+        if not cell_type_id or ":" not in cell_type_id:
             cell_type_id = self._generate_provisional_id(cell_type_name)
         cell_type_label = last_cell_type['rdfs_label']
         if not cell_type_label:
