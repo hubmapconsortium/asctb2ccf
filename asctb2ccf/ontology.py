@@ -184,7 +184,7 @@ class BSOntology:
         # Construct the reference annotation
         ######################################################
         references = obj['references']
-        if references:
+        if references and valid_biomarkers:
             bn = BNode()
             cell_type_iri = URIRef(self._expand_cell_type_id(cell_type_id))
             self.graph.add((bn, RDF.type, OWL.Axiom))
