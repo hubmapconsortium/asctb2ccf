@@ -248,6 +248,8 @@ class BSOntology:
             return self._expand_cl_id(str)
         elif "LMHA:" in str:
             return self._expand_lmha_id(str)
+        elif "FMA:" in str:
+            return self._expand_fma_id(str)
 
     def _expand_cl_id(self, str):
         cl_pattern = re.compile("CL:", re.IGNORECASE)
