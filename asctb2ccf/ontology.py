@@ -132,27 +132,18 @@ class BSOntology:
         ######################################################
         # Construct the biomarker axioms
         ######################################################
-        for marker in obj['biomarkers_gene']:
-            marker_id = marker['id']
-            if marker_id and "HGNC:" in marker_id:
-                marker_name = marker['name']
-                term_id = Literal(marker_id)
-                iri = URIRef(marker_id)
-                label = Literal(marker_name)
-                self.graph.add((iri, RDFS.subClassOf, CCF.biomarker))
-                self.graph.add((iri, RDFS.label, label))
-                self.graph.add((iri, OBOINOWL.id, term_id))
-
-        for marker in obj['biomarkers_protein']:
-            marker_id = marker['id']
-            if marker_id and "HGNC:" in marker_id:
-                marker_name = marker['name']
-                term_id = Literal(marker_id)
-                iri = URIRef(marker_id)
-                label = Literal(marker_name)
-                self.graph.add((iri, RDFS.subClassOf, CCF.biomarker))
-                self.graph.add((iri, RDFS.label, label))
-                self.graph.add((iri, OBOINOWL.id, term_id))
+        biomarker_types = ['gene', 'protein']
+        for biomarker_type in biomarker_types:
+            for marker in obj['biomarkers_' + biomarker_type]:
+                marker_id = marker['id']
+                if marker_id and "HGNC:" in marker_id:
+                    marker_name = marker['name']
+                    term_id = Literal(marker_id)
+                    iri = URIRef(marker_id)
+                    label = Literal(marker_name)
+                    self.graph.add((iri, RDFS.subClassOf, CCF.biomarker))
+                    self.graph.add((iri, RDFS.label, label))
+                    self.graph.add((iri, OBOINOWL.id, term_id))
 
         ######################################################
         # Construct the reference annotation
