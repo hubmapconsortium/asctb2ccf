@@ -97,20 +97,40 @@ class BSOntology:
         ######################################################
         # Construct the characterizing biomarker set class
         ######################################################
-        characterizing_biomarker_set_label =\
-            "characterizing biomarker set of " + cell_type_label
-        iri = URIRef(CCF._NS + snakecase(
-            self._remove_punctuations(
-                lowercase(characterizing_biomarker_set_label))))
-        label = Literal(characterizing_biomarker_set_label)
+        biomarkers = obj['biomarkers']
+        valid_biomarkers = [marker for marker in biomarkers
+                            if "HGNC:" in marker['id']]
+        # Apply when the valid biomarkers are not empty
+        if valid_biomarkers:
+            characterizing_biomarker_set_label =\
+                "characterizing biomarker set of " + cell_type_label
+            iri = URIRef(CCF._NS + snakecase(
+                self._remove_punctuations(
+                    lowercase(characterizing_biomarker_set_label))))
+            label = Literal(characterizing_biomarker_set_label)
 
-        characterizing_biomarker_set = Class(iri, graph=self.graph)
-        self.graph.add((iri, RDFS.label, label))
-        characterizing_biomarker_set.subClassOf =\
-            [CCF.characterizing_biomarker_set]
+            characterizing_biomarker_set = Class(iri, graph=self.graph)
+            self.graph.add((iri, RDFS.label, label))
+
+            characterizing_biomarker_set.equivalentClass =\
+                [BooleanClass(
+                    operator=OWL.intersectionOf,
+                    members=[self._some_values_from(
+                        CCF.has_member,
+                        Class(
+                            URIRef(marker['id']), graph=self.graph
+                        )) for marker in valid_biomarkers]
+                    + [CCF.characterizing_biomarker_set],
+                    graph=self.graph
+                )]
+            characterizing_biomarker_set_expression =\
+                self._some_values_from(
+                    CCF.has_characterizing_biomarker_set,
+                    characterizing_biomarker_set)
+            cell_type.subClassOf = [characterizing_biomarker_set_expression]
 
         ######################################################
-        # Construct the "cell type 'has gene marker' gene" axioms
+        # Construct the biomarker axioms
         ######################################################
         for marker in obj['biomarkers_gene']:
             marker_id = marker['id']
@@ -119,18 +139,10 @@ class BSOntology:
                 term_id = Literal(marker_id)
                 iri = URIRef(marker_id)
                 label = Literal(marker_name)
-                cls_gm = Class(iri, subClassOf=[CCF.biomarker],
-                               graph=self.graph)
+                self.graph.add((iri, RDFS.subClassOf, CCF.biomarker))
                 self.graph.add((iri, RDFS.label, label))
                 self.graph.add((iri, OBOINOWL.id, term_id))
-                cell_type.subClassOf =\
-                    [self._some_values_from(
-                        CCF.has_gene_marker,
-                        cls_gm)]
 
-        ######################################################
-        # Construct the "cell type 'has protein marker' gene" axioms
-        ######################################################
         for marker in obj['biomarkers_protein']:
             marker_id = marker['id']
             if marker_id and "HGNC:" in marker_id:
@@ -138,39 +150,9 @@ class BSOntology:
                 term_id = Literal(marker_id)
                 iri = URIRef(marker_id)
                 label = Literal(marker_name)
-                cls_pm = Class(iri, subClassOf=[CCF.biomarker],
-                               graph=self.graph)
+                self.graph.add((iri, RDFS.subClassOf, CCF.biomarker))
                 self.graph.add((iri, RDFS.label, label))
                 self.graph.add((iri, OBOINOWL.id, term_id))
-                cell_type.subClassOf =\
-                    [self._some_values_from(
-                        CCF.has_protein_marker,
-                        cls_pm)]
-
-        ######################################################
-        # Construct the "cell type 'has protein marker' gene" axioms
-        ######################################################
-        biomarkers = obj['biomarkers']
-        valid_biomarkers = [marker for marker in biomarkers
-                            if "HGNC:" in marker['id']]
-
-        # Apply when the valid biomarkers are not empty
-        if valid_biomarkers:
-            characterizing_biomarker_set.equivalentClass =\
-                [BooleanClass(
-                    operator=OWL.intersectionOf,
-                    members=[self._some_values_from(
-                        CCF.has_member,
-                        Class(
-                            URIRef(marker['id']), graph=self.graph
-                        )) for marker in valid_biomarkers],
-                    graph=self.graph
-                )]
-            characterizing_biomarker_set_expression =\
-                self._some_values_from(
-                    CCF.has_characterizing_biomarker_set,
-                    characterizing_biomarker_set)
-            cell_type.subClassOf = [characterizing_biomarker_set_expression]
 
         ######################################################
         # Construct the reference annotation
