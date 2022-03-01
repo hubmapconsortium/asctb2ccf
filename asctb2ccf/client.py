@@ -22,7 +22,7 @@ class AsctbReporterClient:
         self.gid_map = gid_map
 
     def get_data(self, organ_name, format="json"):
-        """Returns the ontology resource in JSON-LD format given
+        """Returns the ontology resource in a specific format given
            the organ name.
 
         Args:
