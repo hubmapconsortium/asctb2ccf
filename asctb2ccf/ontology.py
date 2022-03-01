@@ -118,7 +118,8 @@ class BSOntology:
                     members=[self._some_values_from(
                         CCF.has_member,
                         Class(
-                            URIRef(marker['id']), graph=self.graph
+                            URIRef(self._expand_biomarker_id(marker['id'])),
+                            graph=self.graph
                         )) for marker in valid_biomarkers]
                     + [CCF.characterizing_biomarker_set],
                     graph=self.graph
@@ -139,7 +140,7 @@ class BSOntology:
                 if marker_id and "HGNC:" in marker_id:
                     marker_name = marker['name']
                     term_id = Literal(marker_id)
-                    iri = URIRef(marker_id)
+                    iri = URIRef(self._expand_biomarker_id(marker_id))
                     label = Literal(marker_name)
                     self.graph.add((iri, RDFS.subClassOf, CCF.biomarker))
                     self.graph.add((iri, RDFS.label, label))
@@ -225,6 +226,17 @@ class BSOntology:
         lmha_pattern = re.compile("LMHA:", re.IGNORECASE)
         return lmha_pattern.sub(
             "http://purl.obolibrary.org/obo/LMHA_", str)
+
+    def _expand_biomarker_id(self, str):
+        if "ASCTB-TEMP:" in str:
+            return self._expand_asctb_temp_id(str)
+        elif "HGNC:" in str:
+            return self._expand_hgnc_id(str)
+
+    def _expand_hgnc_id(self, str):
+        hgnc_pattern = re.compile("HGNC:", re.IGNORECASE)
+        return hgnc_pattern.sub(
+            "http://identifiers.org/hgnc/", str)
 
     def _expand_asctb_temp_id(self, str):
         asctb_temp_pattern = re.compile("ASCTB-TEMP:", re.IGNORECASE)
