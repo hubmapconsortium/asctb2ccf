@@ -127,10 +127,6 @@ class BSOntology:
                     [self._some_values_from(
                         CCF.has_gene_marker,
                         cls_gm)]
-                cls_gm.subClassOf =\
-                    [self._some_values_from(
-                        CCF.is_gene_marker_of,
-                        cell_type)]
 
         ######################################################
         # Construct the "cell type 'has protein marker' gene" axioms
@@ -150,10 +146,6 @@ class BSOntology:
                     [self._some_values_from(
                         CCF.has_protein_marker,
                         cls_pm)]
-                cls_pm.subClassOf =\
-                    [self._some_values_from(
-                        CCF.is_protein_marker_of,
-                        cell_type)]
 
         ######################################################
         # Construct the "cell type 'has protein marker' gene" axioms

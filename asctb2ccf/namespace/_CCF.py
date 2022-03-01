@@ -14,9 +14,6 @@ class CCF(DefinedNamespace):
     located_in: URIRef
     has_gene_marker: URIRef
     has_protein_marker: URIRef
-    is_biomarker_of: URIRef
-    is_gene_marker_of: URIRef
-    is_protein_marker_of: URIRef
     has_characterizing_biomarker_set: URIRef
     is_characterizing_biomarker_set_of: URIRef
     belongs_to_extraction_set: URIRef
