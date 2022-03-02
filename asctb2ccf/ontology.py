@@ -34,8 +34,6 @@ class BSOntology:
         # Some definitions
         Property(CCF.has_member, baseType=OWL.ObjectProperty, graph=g)
         Property(CCF.located_in, baseType=OWL.ObjectProperty, graph=g)
-        Property(CCF.has_characterizing_biomarker_set,
-                 baseType=OWL.ObjectProperty, graph=g)
 
         return BSOntology(g)
 
@@ -201,7 +199,7 @@ class BSOntology:
                 )]
             characterizing_biomarker_set_expression =\
                 self._some_values_from(
-                    CCF.has_characterizing_biomarker_set,
+                    OBO.RO_0015004,
                     characterizing_biomarker_set)
             cell_type.subClassOf = [characterizing_biomarker_set_expression]
 
