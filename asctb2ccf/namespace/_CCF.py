@@ -15,6 +15,7 @@ class CCF(DefinedNamespace):
     # http://www.w3.org/2002/07/owl#DataProperty
 
     # http://www.w3.org/2002/07/owl#AnnotationProperty
+    ccf_pref_label: URIRef
     ccf_part_of: URIRef
     ccf_located_in: URIRef
     ccf_characterizes: URIRef

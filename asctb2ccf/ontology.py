@@ -4,7 +4,7 @@ from string import punctuation
 from stringcase import lowercase, snakecase
 
 from rdflib import Graph, URIRef, Literal
-from rdflib.namespace import OWL, RDF, RDFS, SKOS, DCTERMS
+from rdflib.namespace import OWL, RDF, RDFS, DCTERMS
 from rdflib.extras.infixowl import Ontology, Property, Class, Restriction,\
     BNode, BooleanClass
 
@@ -25,7 +25,6 @@ class BSOntology:
         g.bind('ccf', CCF)
         g.bind('obo', OBO)
         g.bind('owl', OWL)
-        g.bind('skos', SKOS)
         g.bind('dcterms', DCTERMS)
 
         # Ontology properties
@@ -58,7 +57,7 @@ class BSOntology:
                     iri,
                     annotations=[(RDFS.label, labels),
                                  (OBOINOWL.id, term_ids),
-                                 (SKOS.prefLabel, pref_labels),
+                                 (CCF.ccf_pref_label, pref_labels),
                                  (CCF.ccf_asctb_type, [asctb_type]),
                                  (CCF.ccf_part_of, object_restrictions)])
             elif asctb_type.eq("CT"):
@@ -66,7 +65,7 @@ class BSOntology:
                     iri,
                     annotations=[(RDFS.label, labels),
                                  (OBOINOWL.id, term_ids),
-                                 (SKOS.prefLabel, pref_labels),
+                                 (CCF.ccf_pref_label, pref_labels),
                                  (CCF.ccf_asctb_type, [asctb_type]),
                                  (CCF.ccf_located_in, object_restrictions)])
             elif asctb_type.eq("gene") or asctb_type.eq("protein"):
@@ -75,7 +74,7 @@ class BSOntology:
                     subClassOf=CCF.biomarker,
                     annotations=[(RDFS.label, labels),
                                  (OBOINOWL.id, term_ids),
-                                 (SKOS.prefLabel, pref_labels),
+                                 (CCF.ccf_pref_label, pref_labels),
                                  (CCF.ccf_asctb_type, [asctb_type]),
                                  (CCF.ccf_characterizes, object_restrictions)])
         return BSOntology(self.graph)
