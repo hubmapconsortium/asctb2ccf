@@ -21,6 +21,12 @@ class AsctbReporterClient:
     def __init__(self, gid_map):
         self.gid_map = gid_map
 
+    def get_json_data(self, organ_name):
+        return self.get_data(organ_name, "json")
+
+    def get_jsonld_data(self, organ_name):
+        return self.get_data(organ_name, "jsonld")
+
     def get_data(self, organ_name, format="json"):
         """Returns the ontology resource in a specific format given
            the organ name.

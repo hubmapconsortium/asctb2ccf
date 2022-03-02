@@ -4,7 +4,7 @@ from string import punctuation
 from stringcase import lowercase, snakecase
 
 from rdflib import Graph, URIRef, Literal
-from rdflib.namespace import OWL, RDF, RDFS, DCTERMS
+from rdflib.namespace import OWL, RDF, RDFS, SKOS, DCTERMS
 from rdflib.extras.infixowl import Ontology, Property, Class, Restriction,\
     BNode, BooleanClass
 
@@ -25,20 +25,93 @@ class BSOntology:
         g.bind('ccf', CCF)
         g.bind('obo', OBO)
         g.bind('owl', OWL)
+        g.bind('skos', SKOS)
         g.bind('dcterms', DCTERMS)
 
         # Ontology properties
         Ontology(identifier=URIRef(ontology_iri), graph=g)
 
         # Some definitions
-        Class(CCF.characterizing_biomarker_set, graph=g)
-        Property(DCTERMS.references,
-                 baseType=OWL.AnnotationProperty,
-                 graph=g)
+        Property(CCF.has_member, baseType=OWL.ObjectProperty, graph=g)
+        Property(CCF.located_in, baseType=OWL.ObjectProperty, graph=g)
+        Property(CCF.has_characterizing_biomarker_set,
+                 baseType=OWL.ObjectProperty, graph=g)
 
         return BSOntology(g)
 
-    def mutate(self, obj):
+    def mutate_biological_structure(self, obj):
+        """
+        """
+        obj_type = self._get_object_type(obj)
+        if obj_type == "http://www.w3.org/2002/07/owl#Class":
+            asctb_type = self._get_asctb_type(obj)
+            iri = self._get_term_iri(obj)
+            labels = self._get_term_labels(obj)
+            pref_labels = self._get_term_prefLabels(obj)
+            term_ids = self._get_term_ids(obj)
+            object_restrictions = self._get_object_restrictions(obj)
+            if asctb_type.eq("AS"):
+                self._add_term_to_graph(
+                    iri,
+                    annotations=[(RDFS.label, labels),
+                                 (OBOINOWL.id, term_ids),
+                                 (SKOS.prefLabel, pref_labels),
+                                 (CCF.ccf_asctb_type, [asctb_type]),
+                                 (CCF.ccf_part_of, object_restrictions)])
+            elif asctb_type.eq("CT"):
+                self._add_term_to_graph(
+                    iri,
+                    annotations=[(RDFS.label, labels),
+                                 (OBOINOWL.id, term_ids),
+                                 (SKOS.prefLabel, pref_labels),
+                                 (CCF.ccf_asctb_type, [asctb_type]),
+                                 (CCF.ccf_located_in, object_restrictions)])
+            elif asctb_type.eq("gene") or asctb_type.eq("protein"):
+                self._add_term_to_graph(
+                    iri,
+                    subClassOf=CCF.biomarker,
+                    annotations=[(RDFS.label, labels),
+                                 (OBOINOWL.id, term_ids),
+                                 (SKOS.prefLabel, pref_labels),
+                                 (CCF.ccf_asctb_type, [asctb_type]),
+                                 (CCF.ccf_characterizes, object_restrictions)])
+        return BSOntology(self.graph)
+
+    def _get_object_type(self, obj):
+        return obj['@type'][0]
+
+    def _get_asctb_type(self, obj):
+        asctb_type = 'http://purl.org/ccf/latest/ccf.owl#asctb_type'
+        return Literal(obj[asctb_type][0]['@value'])
+
+    def _get_term_iri(self, obj):
+        return URIRef(obj['@id'])
+
+    def _get_term_labels(self, obj):
+        return [Literal(label['@value']) for
+                label in
+                obj['http://www.w3.org/2000/01/rdf-schema#label']]
+
+    def _get_term_prefLabels(self, obj):
+        return [Literal(pref_label['@value']) for
+                pref_label in
+                obj['http://purl.org/ccf/latest/ccf.owl#ccf_preferred_label']]
+
+    def _get_term_ids(self, obj):
+        return [Literal(term_id['@value']) for
+                term_id in
+                obj['http://www.geneontology.org/formats/oboInOwl#id']]
+
+    def _get_object_restrictions(self, obj):
+        some_values_from = 'http://www.w3.org/2002/07/owl#someValuesFrom'
+        if 'http://www.w3.org/2000/01/rdf-schema#subClassOf' in obj:
+            return [URIRef(restriction[some_values_from][0]['@id']) for
+                    restriction in
+                    obj['http://www.w3.org/2000/01/rdf-schema#subClassOf']]
+        else:
+            return []
+
+    def mutate_cell_biomarker(self, obj):
         """
         """
         ######################################################
@@ -58,12 +131,13 @@ class BSOntology:
         if not anatomical_structure_label:
             anatomical_structure_label = anatomical_structure_name
 
-        term_id = Literal(anatomical_structure_id)
         iri = URIRef(self._expand_anatomical_entity_id(anatomical_structure_id))
         label = Literal(anatomical_structure_label)
-        anatomical_structure = Class(iri, graph=self.graph)
-        self.graph.add((iri, RDFS.label, label))
-        self.graph.add((iri, OBOINOWL.id, term_id))
+        term_id = Literal(anatomical_structure_id)
+        anatomical_structure = self._add_term_to_graph(
+            iri,
+            annotations=[(RDFS.label, [label]),
+                         (OBOINOWL.id, [term_id])])
 
         ######################################################
         # Construct the axioms about cell types
@@ -84,9 +158,10 @@ class BSOntology:
         term_id = Literal(cell_type_id)
         iri = URIRef(self._expand_cell_type_id(cell_type_id))
         label = Literal(cell_type_label)
-        cell_type = Class(iri, graph=self.graph)
-        self.graph.add((iri, RDFS.label, label))
-        self.graph.add((iri, OBOINOWL.id, term_id))
+        cell_type = self._add_term_to_graph(
+            iri,
+            annotations=[(RDFS.label, [label]),
+                         (OBOINOWL.id, [term_id])])
 
         ######################################################
         # Construct the "cell type 'located in' anatomical_entity" axiom
@@ -142,9 +217,11 @@ class BSOntology:
                     term_id = Literal(marker_id)
                     iri = URIRef(self._expand_biomarker_id(marker_id))
                     label = Literal(marker_name)
-                    self.graph.add((iri, RDFS.subClassOf, CCF.biomarker))
-                    self.graph.add((iri, RDFS.label, label))
-                    self.graph.add((iri, OBOINOWL.id, term_id))
+                    self._add_term_to_graph(
+                        iri,
+                        subClassOf=CCF.biomarker,
+                        annotations=[(RDFS.label, [label]),
+                                     (OBOINOWL.id, [term_id])])
 
         ######################################################
         # Construct the reference annotation
@@ -171,6 +248,16 @@ class BSOntology:
                         self.graph.add((bn, DCTERMS.references, iri))
 
         return BSOntology(self.graph)
+
+    def _add_term_to_graph(self, iri, subClassOf=None, annotations=[]):
+        term = Class(iri, graph=self.graph)
+        if subClassOf is not None:
+            self.graph.add((iri, RDFS.subClassOf, subClassOf))
+        for annotation_tuple in annotations:
+            property_name, values = annotation_tuple
+            for value in values:
+                self.graph.add((iri, property_name, value))
+        return term
 
     def _generate_provisional_id(self, str):
         str = str.strip()
@@ -250,5 +337,4 @@ class BSOntology:
     def serialize(self, destination):
         """
         """
-        self.graph.serialize(format='application/rdf+xml',
-                             destination=destination)
+        self.graph.serialize(format='ttl', destination=destination)
