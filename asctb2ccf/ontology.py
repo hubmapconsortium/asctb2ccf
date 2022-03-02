@@ -32,6 +32,7 @@ class BSOntology:
         Ontology(identifier=URIRef(ontology_iri), graph=g)
 
         # Some definitions
+        Property(DCTERMS.references, baseType=OWL.AnnotationProperty, graph=g)
         Property(CCF.has_member, baseType=OWL.ObjectProperty, graph=g)
 
         return BSOntology(g)
@@ -241,8 +242,8 @@ class BSOntology:
                     if doi is None:
                         continue
                     if "doi:" in doi or "DOI:" in doi:
-                        iri = URIRef(self._expand_doi(doi))
-                        self.graph.add((bn, DCTERMS.references, iri))
+                        doi_str = Literal(self._expand_doi(doi))
+                        self.graph.add((bn, DCTERMS.references, doi_str))
 
         return BSOntology(self.graph)
 
@@ -334,4 +335,5 @@ class BSOntology:
     def serialize(self, destination):
         """
         """
-        self.graph.serialize(format='ttl', destination=destination)
+        self.graph.serialize(format='application/rdf+xml',
+                             destination=destination)
