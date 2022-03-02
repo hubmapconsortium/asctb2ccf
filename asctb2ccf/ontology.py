@@ -48,6 +48,11 @@ class BSOntology:
             pref_labels = self._get_term_prefLabels(obj)
             term_ids = self._get_term_ids(obj)
             object_restrictions = self._get_object_restrictions(obj)
+
+            # Ignore getting Homo sapiens class
+            if iri.eq("http://purl.obolibrary.org/obo/NCBITaxon_9606"):
+                continue
+
             if asctb_type.eq("AS"):
                 self._add_term_to_graph(
                     iri,
