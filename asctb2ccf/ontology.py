@@ -41,41 +41,44 @@ class BSOntology:
     def mutate_biological_structure(self, obj):
         """
         """
+        # Ignore getting non class object
         obj_type = self._get_object_type(obj)
-        if obj_type == "http://www.w3.org/2002/07/owl#Class":
-            asctb_type = self._get_asctb_type(obj)
-            iri = self._get_term_iri(obj)
-            pref_labels = self._get_term_prefLabels(obj)
-            term_ids = self._get_term_ids(obj)
-            object_restrictions = self._get_object_restrictions(obj)
+        if obj_type != "http://www.w3.org/2002/07/owl#Class":
+            return BSOntology(self.graph)
 
-            # Ignore getting Homo sapiens class
-            if iri.eq("http://purl.obolibrary.org/obo/NCBITaxon_9606"):
-                continue
+        iri = self._get_term_iri(obj)
+        asctb_type = self._get_asctb_type(obj)
+        pref_labels = self._get_term_prefLabels(obj)
+        term_ids = self._get_term_ids(obj)
+        object_restrictions = self._get_object_restrictions(obj)
 
-            if asctb_type.eq("AS"):
-                self._add_term_to_graph(
-                    iri,
-                    annotations=[(OBOINOWL.id, term_ids),
-                                 (CCF.ccf_pref_label, pref_labels),
-                                 (CCF.ccf_asctb_type, [asctb_type]),
-                                 (CCF.ccf_part_of, object_restrictions)])
-            elif asctb_type.eq("CT"):
-                self._add_term_to_graph(
-                    iri,
-                    annotations=[(OBOINOWL.id, term_ids),
-                                 (CCF.ccf_pref_label, pref_labels),
-                                 (CCF.ccf_asctb_type, [asctb_type]),
-                                 (CCF.ccf_located_in, object_restrictions)])
-            elif asctb_type.eq("gene") or asctb_type.eq("protein"):
-                self._add_term_to_graph(
-                    iri,
-                    subClassOf=CCF.biomarker,
-                    annotations=[(OBOINOWL.id, term_ids),
-                                 (CCF.ccf_pref_label, pref_labels),
-                                 (CCF.ccf_asctb_type, [asctb_type]),
-                                 (CCF.ccf_characterizes, object_restrictions)])
+        if asctb_type.eq("AS"):
+            self._add_term_to_graph(
+                iri,
+                annotations=[(OBOINOWL.id, term_ids),
+                             (CCF.ccf_pref_label, pref_labels),
+                             (CCF.ccf_asctb_type, [asctb_type]),
+                             (CCF.ccf_part_of, object_restrictions)])
+        elif asctb_type.eq("CT"):
+            self._add_term_to_graph(
+                iri,
+                annotations=[(OBOINOWL.id, term_ids),
+                             (CCF.ccf_pref_label, pref_labels),
+                             (CCF.ccf_asctb_type, [asctb_type]),
+                             (CCF.ccf_located_in, object_restrictions)])
+        elif asctb_type.eq("gene") or asctb_type.eq("protein"):
+            self._add_term_to_graph(
+                iri,
+                subClassOf=CCF.biomarker,
+                annotations=[(OBOINOWL.id, term_ids),
+                             (CCF.ccf_pref_label, pref_labels),
+                             (CCF.ccf_asctb_type, [asctb_type]),
+                             (CCF.ccf_characterizes, object_restrictions)])
+
         return BSOntology(self.graph)
+
+    def _get_term_iri(self, obj):
+        return URIRef(obj['@id'])
 
     def _get_object_type(self, obj):
         return obj['@type'][0]
@@ -83,9 +86,6 @@ class BSOntology:
     def _get_asctb_type(self, obj):
         asctb_type = 'http://purl.org/ccf/latest/ccf.owl#asctb_type'
         return Literal(obj[asctb_type][0]['@value'])
-
-    def _get_term_iri(self, obj):
-        return URIRef(obj['@id'])
 
     def _get_term_labels(self, obj):
         return [Literal(label['@value']) for
@@ -262,7 +262,7 @@ class BSOntology:
     def _generate_provisional_id(self, str):
         str = str.strip()
         str = lowercase(str)
-        str = re.sub('\\s+', '-', str)
+        str = re.sub('\\W+', '-', str)
         str = re.sub('[^a-z0-9-]+', '', str)
         return f'ASCTB-TEMP:{str}'
 
