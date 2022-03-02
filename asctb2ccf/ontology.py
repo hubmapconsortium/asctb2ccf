@@ -45,7 +45,6 @@ class BSOntology:
         if obj_type == "http://www.w3.org/2002/07/owl#Class":
             asctb_type = self._get_asctb_type(obj)
             iri = self._get_term_iri(obj)
-            labels = self._get_term_labels(obj)
             pref_labels = self._get_term_prefLabels(obj)
             term_ids = self._get_term_ids(obj)
             object_restrictions = self._get_object_restrictions(obj)
@@ -57,16 +56,14 @@ class BSOntology:
             if asctb_type.eq("AS"):
                 self._add_term_to_graph(
                     iri,
-                    annotations=[(RDFS.label, labels),
-                                 (OBOINOWL.id, term_ids),
+                    annotations=[(OBOINOWL.id, term_ids),
                                  (CCF.ccf_pref_label, pref_labels),
                                  (CCF.ccf_asctb_type, [asctb_type]),
                                  (CCF.ccf_part_of, object_restrictions)])
             elif asctb_type.eq("CT"):
                 self._add_term_to_graph(
                     iri,
-                    annotations=[(RDFS.label, labels),
-                                 (OBOINOWL.id, term_ids),
+                    annotations=[(OBOINOWL.id, term_ids),
                                  (CCF.ccf_pref_label, pref_labels),
                                  (CCF.ccf_asctb_type, [asctb_type]),
                                  (CCF.ccf_located_in, object_restrictions)])
@@ -74,8 +71,7 @@ class BSOntology:
                 self._add_term_to_graph(
                     iri,
                     subClassOf=CCF.biomarker,
-                    annotations=[(RDFS.label, labels),
-                                 (OBOINOWL.id, term_ids),
+                    annotations=[(OBOINOWL.id, term_ids),
                                  (CCF.ccf_pref_label, pref_labels),
                                  (CCF.ccf_asctb_type, [asctb_type]),
                                  (CCF.ccf_characterizes, object_restrictions)])
@@ -140,8 +136,7 @@ class BSOntology:
         term_id = Literal(anatomical_structure_id)
         anatomical_structure = self._add_term_to_graph(
             iri,
-            annotations=[(RDFS.label, [label]),
-                         (OBOINOWL.id, [term_id])])
+            annotations=[(OBOINOWL.id, [term_id])])
 
         ######################################################
         # Construct the axioms about cell types
@@ -164,8 +159,7 @@ class BSOntology:
         label = Literal(cell_type_label)
         cell_type = self._add_term_to_graph(
             iri,
-            annotations=[(RDFS.label, [label]),
-                         (OBOINOWL.id, [term_id])])
+            annotations=[(OBOINOWL.id, [term_id])])
 
         ######################################################
         # Construct the "cell type 'located in' anatomical_entity" axiom
@@ -224,8 +218,7 @@ class BSOntology:
                     self._add_term_to_graph(
                         iri,
                         subClassOf=CCF.biomarker,
-                        annotations=[(RDFS.label, [label]),
-                                     (OBOINOWL.id, [term_id])])
+                        annotations=[(OBOINOWL.id, [term_id])])
 
         ######################################################
         # Construct the reference annotation
@@ -253,10 +246,13 @@ class BSOntology:
 
         return BSOntology(self.graph)
 
-    def _add_term_to_graph(self, iri, subClassOf=None, annotations=[]):
+    def _add_term_to_graph(self, iri, subClassOf=None, label=None,
+                           annotations=[]):
         term = Class(iri, graph=self.graph)
         if subClassOf is not None:
             self.graph.add((iri, RDFS.subClassOf, subClassOf))
+        if label is not None:
+            self.graph.add((iri, RDFS.label, label))
         for annotation_tuple in annotations:
             property_name, values = annotation_tuple
             for value in values:
