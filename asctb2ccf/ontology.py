@@ -25,6 +25,8 @@ class BSOntology:
         g.bind('ccf', CCF)
         g.bind('obo', OBO)
         g.bind('owl', OWL)
+        g.bind('rdf', RDF)
+        g.bind('rdfs', RDFS)
         g.bind('dcterms', DCTERMS)
 
         # Ontology properties
