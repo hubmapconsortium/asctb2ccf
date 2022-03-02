@@ -11,7 +11,6 @@ class CCF(DefinedNamespace):
 
     # http://www.w3.org/2002/07/owl#ObjectProperty
     has_member: URIRef
-    located_in: URIRef
 
     # http://www.w3.org/2002/07/owl#DataProperty
 

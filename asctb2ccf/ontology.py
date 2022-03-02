@@ -33,7 +33,6 @@ class BSOntology:
 
         # Some definitions
         Property(CCF.has_member, baseType=OWL.ObjectProperty, graph=g)
-        Property(CCF.located_in, baseType=OWL.ObjectProperty, graph=g)
 
         return BSOntology(g)
 
