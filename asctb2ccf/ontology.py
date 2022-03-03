@@ -124,7 +124,7 @@ class BSOntology:
         last_anatomical_structure = anatomical_structures[-1]
         anatomical_structure_id = last_anatomical_structure['id']
         anatomical_structure_name = last_anatomical_structure['name']
-        if not anatomical_structure_id:
+        if not anatomical_structure_id or ":" not in anatomical_structure_id:
             anatomical_structure_id =\
                 self._generate_provisional_id(anatomical_structure_name)
         anatomical_structure_label = last_anatomical_structure['rdfs_label']
