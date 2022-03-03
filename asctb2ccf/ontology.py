@@ -217,6 +217,7 @@ class BSOntology:
                     label = Literal(marker_name)
                     self._add_term_to_graph(
                         iri,
+                        label=label,
                         subClassOf=CCF.biomarker,
                         annotations=[(OBOINOWL.id, [term_id])])
 
