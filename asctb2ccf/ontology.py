@@ -122,21 +122,22 @@ class BSOntology:
             raise ValueError("Anatomical structure data are missing")
 
         last_anatomical_structure = anatomical_structures[-1]
-        anatomical_structure_id = last_anatomical_structure['id']
-        anatomical_structure_name = last_anatomical_structure['name']
-        if not anatomical_structure_id or ":" not in anatomical_structure_id:
-            anatomical_structure_id =\
-                self._generate_provisional_id(anatomical_structure_name)
-        anatomical_structure_label = last_anatomical_structure['rdfs_label']
-        if not anatomical_structure_label:
-            anatomical_structure_label = anatomical_structure_name
+        anatomical_struct_id = last_anatomical_structure['id']
+        anatomical_struct_label = last_anatomical_structure['rdfs_label']
+        anatomical_struct_pref_name = anatomical_struct_label
+        if not anatomical_struct_id or ":" not in anatomical_struct_id:
+            anatomical_struct_pref_name = last_anatomical_structure['name']
+            anatomical_struct_id =\
+                self._generate_provisional_id(anatomical_struct_pref_name)
 
-        iri = URIRef(self._expand_anatomical_entity_id(anatomical_structure_id))
-        label = Literal(anatomical_structure_label)
-        term_id = Literal(anatomical_structure_id)
+        iri = URIRef(self._expand_anatomical_entity_id(anatomical_struct_id))
+        label = Literal(anatomical_struct_label)
+        pref_label = Literal(anatomical_struct_pref_name)
+        term_id = Literal(anatomical_struct_id)
         anatomical_structure = self._add_term_to_graph(
             iri,
-            annotations=[(OBOINOWL.id, [term_id])])
+            annotations=[(OBOINOWL.id, [term_id]),
+                         (CCF.ccf_pref_label, [pref_label])])
 
         ######################################################
         # Construct the axioms about cell types
@@ -147,19 +148,20 @@ class BSOntology:
 
         last_cell_type = cell_types[-1]
         cell_type_id = last_cell_type['id']
-        cell_type_name = last_cell_type['name']
-        if not cell_type_id or ":" not in cell_type_id:
-            cell_type_id = self._generate_provisional_id(cell_type_name)
         cell_type_label = last_cell_type['rdfs_label']
-        if not cell_type_label:
-            cell_type_label = cell_type_name
+        cell_type_pref_label = cell_type_label
+        if not cell_type_id or ":" not in cell_type_id:
+            cell_type_pref_label = last_cell_type['name']
+            cell_type_id = self._generate_provisional_id(cell_type_pref_label)
 
-        term_id = Literal(cell_type_id)
         iri = URIRef(self._expand_cell_type_id(cell_type_id))
         label = Literal(cell_type_label)
+        pref_label = Literal(cell_type_pref_label)
+        term_id = Literal(cell_type_id)
         cell_type = self._add_term_to_graph(
             iri,
-            annotations=[(OBOINOWL.id, [term_id])])
+            annotations=[(OBOINOWL.id, [term_id]),
+                         (CCF.ccf_pref_label, [pref_label])])
 
         ######################################################
         # Construct the "cell type 'located in' anatomical_entity" axiom
@@ -182,8 +184,9 @@ class BSOntology:
                     lowercase(characterizing_biomarker_set_label))))
             label = Literal(characterizing_biomarker_set_label)
 
-            characterizing_biomarker_set = Class(iri, graph=self.graph)
-            self.graph.add((iri, RDFS.label, label))
+            characterizing_biomarker_set = self._add_term_to_graph(
+                iri,
+                label=label)
 
             characterizing_biomarker_set.equivalentClass =\
                 [BooleanClass(
@@ -212,14 +215,15 @@ class BSOntology:
                 marker_id = marker['id']
                 if marker_id and "HGNC:" in marker_id:
                     marker_name = marker['name']
-                    term_id = Literal(marker_id)
                     iri = URIRef(self._expand_biomarker_id(marker_id))
                     label = Literal(marker_name)
+                    pref_label = Literal(marker_name)
+                    term_id = Literal(marker_id)
                     self._add_term_to_graph(
                         iri,
-                        label=label,
                         subClassOf=CCF.biomarker,
-                        annotations=[(OBOINOWL.id, [term_id])])
+                        annotations=[(OBOINOWL.id, [term_id]),
+                                     (CCF.ccf_pref_label, [pref_label])])
 
         ######################################################
         # Construct the reference annotation
