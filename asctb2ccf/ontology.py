@@ -125,6 +125,9 @@ class BSOntology:
         anatomical_struct_id = last_anatomical_structure['id']
         anatomical_struct_label = last_anatomical_structure['rdfs_label']
         anatomical_struct_pref_name = anatomical_struct_label
+
+        # In the case the anatomical structure has a missing ID or ID is
+        # not yet available in the reference ontology
         if not anatomical_struct_id or ":" not in anatomical_struct_id:
             anatomical_struct_pref_name = last_anatomical_structure['name']
             anatomical_struct_id =\
@@ -150,6 +153,9 @@ class BSOntology:
         cell_type_id = last_cell_type['id']
         cell_type_label = last_cell_type['rdfs_label']
         cell_type_pref_label = cell_type_label
+
+        # In the case the cell type has a missing ID or ID is not yet available
+        # in the reference ontology
         if not cell_type_id or ":" not in cell_type_id:
             cell_type_pref_label = last_cell_type['name']
             cell_type_id = self._generate_provisional_id(cell_type_pref_label)
@@ -178,7 +184,7 @@ class BSOntology:
         # Apply when the valid biomarkers are not empty
         if valid_biomarkers:
             characterizing_biomarker_set_label =\
-                "characterizing biomarker set of " + cell_type_label
+                "characterizing biomarker set of " + cell_type_pref_label
             iri = URIRef(CCF._NS + snakecase(
                 self._remove_punctuations(
                     lowercase(characterizing_biomarker_set_label))))
