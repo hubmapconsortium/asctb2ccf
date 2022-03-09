@@ -10,7 +10,7 @@ class CCF(DefinedNamespace):
     _fail = True
 
     # http://www.w3.org/2002/07/owl#ObjectProperty
-    has_member: URIRef
+    has_marker_component: URIRef
 
     # http://www.w3.org/2002/07/owl#DataProperty
 

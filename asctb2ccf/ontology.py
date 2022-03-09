@@ -34,7 +34,7 @@ class BSOntology:
 
         # Some definitions
         Property(DCTERMS.references, baseType=OWL.AnnotationProperty, graph=g)
-        Property(CCF.has_member, baseType=OWL.ObjectProperty, graph=g)
+        Property(CCF.has_marker_component, baseType=OWL.ObjectProperty, graph=g)
 
         return BSOntology(g)
 
@@ -197,35 +197,22 @@ class BSOntology:
         ######################################################
         # Construct the characterizing biomarker set class
         ######################################################
-        characterizing_biomarker_set = None
-        if cell_type_pref_label:
-            characterizing_biomarker_set_label =\
-                "characterizing biomarker set of " + cell_type_pref_label
-            iri = URIRef(CCF._NS + snakecase(
-                self._remove_punctuations(
-                    lowercase(characterizing_biomarker_set_label))))
-            label = Literal(characterizing_biomarker_set_label)
-            characterizing_biomarker_set = self._add_term_to_graph(
-                iri,
-                label=label)
-
         biomarkers = obj['biomarkers']
         valid_biomarkers = [marker for marker in biomarkers
                             if "HGNC:" in marker['id']]
-        if characterizing_biomarker_set and valid_biomarkers:
-            # Construct the equivalent class
-            characterizing_biomarker_set.equivalentClass =\
-                [BooleanClass(
+        if valid_biomarkers:
+            # Construct the characterizing biomarker set definition
+            characterizing_biomarker_set =\
+                BooleanClass(
                     operator=OWL.intersectionOf,
-                    members=[self._some_values_from(
-                        CCF.has_member,
+                    members=[OBO.SO_0001260] + [self._some_values_from(
+                        CCF.has_marker_component,
                         Class(
                             URIRef(self._expand_biomarker_id(marker['id'])),
                             graph=self.graph
-                        )) for marker in valid_biomarkers]
-                    + [CCF.characterizing_biomarker_set],
+                        )) for marker in valid_biomarkers],
                     graph=self.graph
-                )]
+                )
             characterizing_biomarker_set_expression =\
                 self._some_values_from(
                     OBO.RO_0015004,

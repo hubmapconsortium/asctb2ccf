@@ -12,6 +12,7 @@ class OBO(DefinedNamespace):
     # http://www.w3.org/2002/07/owl#ObjectProperty
     RO_0001025: URIRef  # located_in
     RO_0015004: URIRef  # has characterizing marker set
+    SO_0001260: URIRef  # sequence_collection
 
     # http://www.w3.org/2002/07/owl#DataProperty
 
