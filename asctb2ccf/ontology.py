@@ -176,44 +176,7 @@ class BSOntology:
             [self._some_values_from(OBO.RO_0001025, anatomical_structure)]
 
         ######################################################
-        # Construct the characterizing biomarker set class
-        ######################################################
-        biomarkers = obj['biomarkers']
-        valid_biomarkers = [marker for marker in biomarkers
-                            if "HGNC:" in marker['id']]
-        # Apply when the valid biomarkers are not empty
-        if valid_biomarkers:
-            characterizing_biomarker_set_label =\
-                "characterizing biomarker set of " + cell_type_pref_label
-            iri = URIRef(CCF._NS + snakecase(
-                self._remove_punctuations(
-                    lowercase(characterizing_biomarker_set_label))))
-            label = Literal(characterizing_biomarker_set_label)
-
-            characterizing_biomarker_set = self._add_term_to_graph(
-                iri,
-                label=label)
-
-            characterizing_biomarker_set.equivalentClass =\
-                [BooleanClass(
-                    operator=OWL.intersectionOf,
-                    members=[self._some_values_from(
-                        CCF.has_member,
-                        Class(
-                            URIRef(self._expand_biomarker_id(marker['id'])),
-                            graph=self.graph
-                        )) for marker in valid_biomarkers]
-                    + [CCF.characterizing_biomarker_set],
-                    graph=self.graph
-                )]
-            characterizing_biomarker_set_expression =\
-                self._some_values_from(
-                    OBO.RO_0015004,
-                    characterizing_biomarker_set)
-            cell_type.subClassOf = [characterizing_biomarker_set_expression]
-
-        ######################################################
-        # Construct the biomarker axioms
+        # Construct the axioms about biomarkers
         ######################################################
         biomarker_types = ['gene', 'protein']
         for biomarker_type in biomarker_types:
@@ -232,28 +195,64 @@ class BSOntology:
                                      (CCF.ccf_pref_label, [pref_label])])
 
         ######################################################
-        # Construct the reference annotation
+        # Construct the characterizing biomarker set class
         ######################################################
-        references = obj['references']
-        if references and valid_biomarkers:
-            bn = BNode()
-            cell_type_iri = URIRef(self._expand_cell_type_id(cell_type_id))
-            self.graph.add((bn, RDF.type, OWL.Axiom))
-            self.graph.add((bn, OWL.annotatedSource,
-                           cell_type_iri))
-            self.graph.add((bn, OWL.annotatedProperty,
-                           RDFS.subClassOf))
-            self.graph.add((bn, OWL.annotatedTarget,
-                           characterizing_biomarker_set_expression
-                           .identifier))
-            for reference in references:
-                if 'doi' in reference:
-                    doi = reference['doi']
-                    if doi is None:
-                        continue
-                    if "doi:" in doi or "DOI:" in doi:
-                        doi_str = Literal(self._expand_doi(doi))
-                        self.graph.add((bn, DCTERMS.references, doi_str))
+        characterizing_biomarker_set = None
+        if cell_type_pref_label:
+            characterizing_biomarker_set_label =\
+                "characterizing biomarker set of " + cell_type_pref_label
+            iri = URIRef(CCF._NS + snakecase(
+                self._remove_punctuations(
+                    lowercase(characterizing_biomarker_set_label))))
+            label = Literal(characterizing_biomarker_set_label)
+            characterizing_biomarker_set = self._add_term_to_graph(
+                iri,
+                label=label)
+
+        biomarkers = obj['biomarkers']
+        valid_biomarkers = [marker for marker in biomarkers
+                            if "HGNC:" in marker['id']]
+        if characterizing_biomarker_set and valid_biomarkers:
+            # Construct the equivalent class
+            characterizing_biomarker_set.equivalentClass =\
+                [BooleanClass(
+                    operator=OWL.intersectionOf,
+                    members=[self._some_values_from(
+                        CCF.has_member,
+                        Class(
+                            URIRef(self._expand_biomarker_id(marker['id'])),
+                            graph=self.graph
+                        )) for marker in valid_biomarkers]
+                    + [CCF.characterizing_biomarker_set],
+                    graph=self.graph
+                )]
+            characterizing_biomarker_set_expression =\
+                self._some_values_from(
+                    OBO.RO_0015004,
+                    characterizing_biomarker_set)
+            cell_type.subClassOf = [characterizing_biomarker_set_expression]
+
+            # Construct the reference annotations
+            references = obj['references']
+            if references:
+                bn = BNode()
+                cell_type_iri = URIRef(self._expand_cell_type_id(cell_type_id))
+                self.graph.add((bn, RDF.type, OWL.Axiom))
+                self.graph.add((bn, OWL.annotatedSource,
+                               cell_type_iri))
+                self.graph.add((bn, OWL.annotatedProperty,
+                               RDFS.subClassOf))
+                self.graph.add((bn, OWL.annotatedTarget,
+                               characterizing_biomarker_set_expression
+                               .identifier))
+                for reference in references:
+                    if 'doi' in reference:
+                        doi = reference['doi']
+                        if doi is None:
+                            continue
+                        if "doi:" in doi or "DOI:" in doi:
+                            doi_str = Literal(self._expand_doi(doi))
+                            self.graph.add((bn, DCTERMS.references, doi_str))
 
         return BSOntology(self.graph)
 
