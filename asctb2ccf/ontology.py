@@ -170,12 +170,6 @@ class BSOntology:
                          (CCF.ccf_pref_label, [pref_label])])
 
         ######################################################
-        # Construct the "cell type 'located in' anatomical_entity" axiom
-        ######################################################
-        cell_type.subClassOf =\
-            [self._some_values_from(OBO.RO_0001025, anatomical_structure)]
-
-        ######################################################
         # Construct the axioms about biomarkers
         ######################################################
         biomarker_types = ['gene', 'protein']
