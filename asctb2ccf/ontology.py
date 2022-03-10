@@ -66,7 +66,7 @@ class BSOntology:
                              (CCF.ccf_pref_label, pref_labels),
                              (CCF.ccf_asctb_type, [asctb_type]),
                              (CCF.ccf_located_in, object_restrictions)])
-        elif asctb_type.eq("gene") or asctb_type.eq("protein"):
+        elif asctb_type.eq("BM"):
             self._add_term_to_graph(
                 iri,
                 subClassOf=CCF.biomarker,
