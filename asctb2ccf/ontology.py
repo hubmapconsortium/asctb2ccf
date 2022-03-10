@@ -121,7 +121,7 @@ class BSOntology:
         if not anatomical_structures:
             raise ValueError("Anatomical structure data are missing")
 
-        last_anatomical_structure = anatomical_structures[-1]
+        last_anatomical_structure = self._get_last_item(anatomical_structures)
         anatomical_struct_id = last_anatomical_structure['id']
         anatomical_struct_label = last_anatomical_structure['rdfs_label']
         anatomical_struct_pref_name = anatomical_struct_label
@@ -149,7 +149,7 @@ class BSOntology:
         if not cell_types:
             raise ValueError("Cell type data are missing")
 
-        last_cell_type = cell_types[-1]
+        last_cell_type = self._get_last_item(cell_types)
         cell_type_id = last_cell_type['id']
         cell_type_label = last_cell_type['rdfs_label']
         cell_type_pref_label = cell_type_label
@@ -249,6 +249,9 @@ class BSOntology:
             for value in values:
                 self.graph.add((iri, property_name, value))
         return term
+
+    def _get_last_item(self, arr):
+        return next(item for item in reversed(arr) if item and 'id' in item)
 
     def _generate_provisional_id(self, str):
         str = str.strip()
