@@ -276,7 +276,8 @@ class BSOntology:
             return self._expand_fma_id(str)
         elif "UBERON:" in str:
             return self._expand_uberon_id(str)
-        return str
+        else:
+            raise ValueError("Invalid anatomical structure ID: " + str)
 
     def _expand_fma_id(self, str):
         fma_pattern = re.compile("FMA:", re.IGNORECASE)
@@ -297,6 +298,8 @@ class BSOntology:
             return self._expand_lmha_id(str)
         elif "FMA:" in str:
             return self._expand_fma_id(str)
+        else:
+            raise ValueError("Invalid cell type ID: " + str)
 
     def _expand_cl_id(self, str):
         cl_pattern = re.compile("CL:", re.IGNORECASE)
@@ -313,6 +316,8 @@ class BSOntology:
             return self._expand_asctb_temp_id(str)
         elif "HGNC:" in str:
             return self._expand_hgnc_id(str)
+        else:
+            raise ValueError("Invalid biomarker ID: " + str)
 
     def _expand_hgnc_id(self, str):
         hgnc_pattern = re.compile("HGNC:", re.IGNORECASE)
