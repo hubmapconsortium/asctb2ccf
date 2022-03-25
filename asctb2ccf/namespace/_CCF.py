@@ -20,6 +20,7 @@ class CCF(DefinedNamespace):
     ccf_located_in: URIRef
     ccf_characterizes: URIRef
     ccf_asctb_type: URIRef
+    ccf_ct_isa: URIRef
 
     # http://www.w3.org/2002/07/owl#Class
     biomarker: URIRef

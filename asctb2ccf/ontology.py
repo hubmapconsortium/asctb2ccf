@@ -60,12 +60,14 @@ class BSOntology:
                              (CCF.ccf_asctb_type, [asctb_type]),
                              (CCF.ccf_part_of, object_restrictions)])
         elif asctb_type.eq("CT"):
+            cell = URIRef("http://purl.obolibrary.org/obo/CL_0000000")
             self._add_term_to_graph(
                 iri,
                 annotations=[(OBOINOWL.id, term_ids),
                              (CCF.ccf_pref_label, pref_labels),
                              (CCF.ccf_asctb_type, [asctb_type]),
-                             (CCF.ccf_located_in, object_restrictions)])
+                             (CCF.ccf_located_in, object_restrictions),
+                             (CCF.ccf_ct_isa, [cell])])
         elif asctb_type.eq("BM"):
             self._add_term_to_graph(
                 iri,
