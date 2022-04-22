@@ -76,7 +76,30 @@ class BSOntology:
                              (CCF.ccf_pref_label, pref_labels),
                              (CCF.ccf_asctb_type, [asctb_type]),
                              (CCF.ccf_characterizes, object_restrictions)])
+        return BSOntology(self.graph)
 
+    def mutate_cell_location(self, obj):
+        anatomical_structures = obj['anatomical_structures']
+        if not anatomical_structures:
+            raise ValueError("Anatomical structure data are missing")
+
+        cell_types = obj['cell_types']
+        if not cell_types:
+            raise ValueError("Cell type data are missing")
+
+        for cell_type in cell_types:
+            ct_id = cell_type['id']
+            if not ct_id or ":" not in ct_id:
+                ct_pref_label = cell_type['name']
+                ct_id = self._generate_provisional_id(ct_pref_label)
+            ct_iri = URIRef(self._expand_cell_type_id(ct_id))
+            for anatomical_structure in anatomical_structures:
+                as_id = anatomical_structure['id']
+                if not as_id or ":" not in as_id:
+                    as_pref_label = anatomical_structure["name"]
+                    as_id = self._generate_provisional_id(as_pref_label)
+                as_iri = URIRef(self._expand_anatomical_entity_id(as_id))
+                self.graph.add((ct_iri, CCF.ccf_located_in, as_iri))
         return BSOntology(self.graph)
 
     def _get_term_iri(self, obj):

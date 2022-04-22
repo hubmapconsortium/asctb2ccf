@@ -27,8 +27,17 @@ def run(args):
                 logging.warning(str(e) +
                     f', row {index}, in <spreadsheet> {organ_name}')
     else:
+        # Construct the ontology base
         response = client.get_jsonld_data(organ_name)
         for data_item in response:
             o = o.mutate_biological_structure(data_item)
 
+        # Enrich the ontology base with cell location annotations
+        response = client.get_json_data(organ_name)
+        for index, data_item in enumerate(response['data']):
+            try:
+                o = o.mutate_cell_location(data_item)
+            except ValueError as e:
+                logging.warning(str(e) +
+                    f', row {index}, in <spreadsheet> {organ_name}')
     o.serialize(args.output)
