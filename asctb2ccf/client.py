@@ -21,13 +21,13 @@ class AsctbReporterClient:
     def __init__(self, gid_map):
         self.gid_map = gid_map
 
-    def get_json_data(self, organ_name):
-        return self.get_data(organ_name, "json")
+    def get_json_data(self, organ_name, version_tag="latest"):
+        return self.get_data(organ_name, version_tag, "json")
 
-    def get_jsonld_data(self, organ_name):
-        return self.get_data(organ_name, "jsonld")
+    def get_jsonld_data(self, organ_name, version_tag="latest"):
+        return self.get_data(organ_name, version_tag, "jsonld")
 
-    def get_data(self, organ_name, format="json"):
+    def get_data(self, organ_name, version_tag="latest", format="json"):
         """Returns the ontology resource in a specific format given
            the organ name.
 
@@ -37,14 +37,14 @@ class AsctbReporterClient:
         Returns:
             An object containing the ontology resource.
         """
-        csvUrl = self.get_export_csv_url(organ_name)
+        csvUrl = self.get_export_csv_url(organ_name, version_tag)
         base_endpoint = f'{self._BASE_URL}/{self._VERSION}/{self._CSV}'
         url = f'{base_endpoint}?{self._OUTPUT}={format}&{self._CSV_URL}={csvUrl}'
         response = json_handler(url)
 
         return response
 
-    def get_export_csv_url(self, organ_name):
-        sheet_url = self.gid_map[organ_name]['latest']
+    def get_export_csv_url(self, organ_name, version_tag="latest"):
+        sheet_url = self.gid_map[organ_name][version_tag]
         export_url = sheet_url.replace('edit#', 'export?')
         return quote_plus(f'{export_url}&format=csv')
