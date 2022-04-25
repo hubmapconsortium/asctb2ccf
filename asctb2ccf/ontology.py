@@ -195,7 +195,7 @@ class BSOntology:
         for biomarker_type in biomarker_types:
             for marker in obj['biomarkers_' + biomarker_type]:
                 marker_id = marker['id']
-                if marker_id and "HGNC:" in marker_id:
+                if self._is_valid_marker_id(marker_id):
                     marker_name = marker['name']
                     iri = URIRef(self._expand_biomarker_id(marker_id))
                     label = Literal(marker_name)
@@ -210,7 +210,7 @@ class BSOntology:
         ######################################################
         biomarkers = obj['biomarkers']
         valid_biomarkers = [marker for marker in biomarkers
-                            if "HGNC:" in marker['id']]
+                            if self._is_valid_marker_id(marker['id'])]
         if valid_biomarkers:
             # Construct the characterizing biomarker set definition
             characterizing_biomarker_set =\
@@ -276,6 +276,9 @@ class BSOntology:
         str = re.sub('\\W+', '-', str)
         str = re.sub('[^a-z0-9-]+', '', str)
         return f'ASCTB-TEMP:{str}'
+
+    def _is_valid_marker_id(self, str):
+        return str and re.match(r"HGNC:[0-9]+", str)
 
     def _some_values_from(self, property, filler):
         return Restriction(property,
