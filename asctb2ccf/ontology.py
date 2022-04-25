@@ -118,7 +118,7 @@ class BSOntology:
                 obj['http://www.w3.org/2000/01/rdf-schema#label']]
 
     def _get_term_prefLabels(self, obj):
-        return [Literal(pref_label['@value']) for
+        return [Literal(pref_label['@value'].lower()) for
                 pref_label in
                 obj['http://purl.org/ccf/latest/ccf.owl#ccf_preferred_label']]
 
