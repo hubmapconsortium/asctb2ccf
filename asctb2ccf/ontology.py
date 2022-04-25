@@ -162,10 +162,7 @@ class BSOntology:
         label = Literal(anatomical_struct_label)
         pref_label = Literal(anatomical_struct_pref_name)
         term_id = Literal(anatomical_struct_id)
-        anatomical_structure = self._add_term_to_graph(
-            iri,
-            annotations=[(OBOINOWL.id, [term_id]),
-                         (CCF.ccf_pref_label, [pref_label])])
+        anatomical_structure = self._add_term_to_graph(iri)
 
         ######################################################
         # Construct the axioms about cell types
@@ -189,10 +186,7 @@ class BSOntology:
         label = Literal(cell_type_label)
         pref_label = Literal(cell_type_pref_label)
         term_id = Literal(cell_type_id)
-        cell_type = self._add_term_to_graph(
-            iri,
-            annotations=[(OBOINOWL.id, [term_id]),
-                         (CCF.ccf_pref_label, [pref_label])])
+        cell_type = self._add_term_to_graph(iri)
 
         ######################################################
         # Construct the axioms about biomarkers
@@ -209,9 +203,7 @@ class BSOntology:
                     term_id = Literal(marker_id)
                     self._add_term_to_graph(
                         iri,
-                        subClassOf=CCF.biomarker,
-                        annotations=[(OBOINOWL.id, [term_id]),
-                                     (CCF.ccf_pref_label, [pref_label])])
+                        subClassOf=CCF.biomarker)
 
         ######################################################
         # Construct the characterizing biomarker set class
