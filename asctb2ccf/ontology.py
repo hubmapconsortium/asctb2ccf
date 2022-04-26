@@ -62,6 +62,9 @@ class BSOntology:
         elif asctb_type.eq("CT"):
             cell = URIRef("http://purl.obolibrary.org/obo/CL_0000000")
             self._add_term_to_graph(
+                cell,
+                annotations=[(CCF.ccf_pref_label, [Literal("cell")])])
+            self._add_term_to_graph(
                 iri,
                 annotations=[(OBOINOWL.id, term_ids),
                              (CCF.ccf_pref_label, pref_labels),
