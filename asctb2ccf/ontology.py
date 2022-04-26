@@ -60,17 +60,11 @@ class BSOntology:
                              (CCF.ccf_asctb_type, [asctb_type]),
                              (CCF.ccf_part_of, object_restrictions)])
         elif asctb_type.eq("CT"):
-            cell = URIRef("http://purl.obolibrary.org/obo/CL_0000000")
-            self._add_term_to_graph(
-                cell,
-                annotations=[(CCF.ccf_pref_label, [Literal("cell")])])
             self._add_term_to_graph(
                 iri,
                 annotations=[(OBOINOWL.id, term_ids),
                              (CCF.ccf_pref_label, pref_labels),
-                             (CCF.ccf_asctb_type, [asctb_type]),
-                             (CCF.ccf_located_in, object_restrictions),
-                             (CCF.ccf_ct_isa, [cell])])
+                             (CCF.ccf_asctb_type, [asctb_type])])
         elif asctb_type.eq("BM"):
             self._add_term_to_graph(
                 iri,
@@ -79,6 +73,36 @@ class BSOntology:
                              (CCF.ccf_pref_label, pref_labels),
                              (CCF.ccf_asctb_type, [asctb_type]),
                              (CCF.ccf_characterizes, object_restrictions)])
+        return BSOntology(self.graph)
+
+    def mutate_cell_hierarchy(self, obj):
+        cell_types = obj['cell_types']
+        if not cell_types:
+            raise ValueError("Cell type data are missing")
+
+        parent_cell = None
+        for cell_type in cell_types:
+            ct_id = cell_type['id']
+            if not ct_id or ":" not in ct_id:
+                ct_pref_label = cell_type['name']
+                ct_id = self._generate_provisional_id(ct_pref_label)
+            ct_iri = URIRef(self._expand_cell_type_id(ct_id))
+
+            # If the cell type is at the top of the list (parent is undefined),
+            # then the class cell (CL:0000000) is the parent
+            if not parent_cell:
+                cell = URIRef("http://purl.obolibrary.org/obo/CL_0000000")
+                self._add_term_to_graph(
+                    cell,
+                    annotations=[(CCF.ccf_pref_label, [Literal("cell")])])
+                parent_cell = cell
+
+            self._add_term_to_graph(
+                ct_iri,
+                annotations=[(CCF.ccf_ct_isa, [parent_cell])])
+
+            # The current cell type is the parent cell for the next cell type.
+            parent_cell = ct_iri
         return BSOntology(self.graph)
 
     def mutate_cell_location(self, obj):
