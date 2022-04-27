@@ -59,12 +59,9 @@ class BSOntology:
                              (CCF.ccf_pref_label, pref_labels),
                              (CCF.ccf_asctb_type, [asctb_type]),
                              (CCF.ccf_part_of, object_restrictions)])
-        elif asctb_type.eq("CT"):
-            self._add_term_to_graph(
-                iri,
-                annotations=[(OBOINOWL.id, term_ids),
-                             (CCF.ccf_pref_label, pref_labels),
-                             (CCF.ccf_asctb_type, [asctb_type])])
+        #elif asctb_type.eq("CT"):
+            # NO-OP
+            # Replaced by the mutate_cell_names method
         elif asctb_type.eq("BM"):
             self._add_term_to_graph(
                 iri,
@@ -73,6 +70,29 @@ class BSOntology:
                              (CCF.ccf_pref_label, pref_labels),
                              (CCF.ccf_asctb_type, [asctb_type]),
                              (CCF.ccf_characterizes, object_restrictions)])
+        return BSOntology(self.graph)
+
+    def mutate_cell_name(self, obj):
+        cell_types = obj['cell_types']
+        if not cell_types:
+            raise ValueError("Cell type data are missing")
+
+        for cell_type in cell_types:
+            ct_id = cell_type['id']
+            if not ct_id or ":" not in ct_id:
+                ct_pref_label = cell_type['name']
+                ct_id = self._generate_provisional_id(ct_pref_label)
+            ct_iri = URIRef(self._expand_cell_type_id(ct_id))
+
+            term_id = Literal(ct_id)
+            pref_label = Literal(cell_type['name'].lower())
+            asctb_type = Literal("CT")
+
+            self._add_term_to_graph(
+                ct_iri,
+                annotations=[(OBOINOWL.id, [term_id]),
+                             (CCF.ccf_pref_label, [pref_label]),
+                             (CCF.ccf_asctb_type, [asctb_type])])
         return BSOntology(self.graph)
 
     def mutate_cell_hierarchy(self, obj):
