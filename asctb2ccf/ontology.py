@@ -72,7 +72,7 @@ class BSOntology:
                              (CCF.ccf_characterizes, object_restrictions)])
         return BSOntology(self.graph)
 
-    def mutate_cell_name(self, obj):
+    def mutate_cell_type(self, obj):
         cell_types = obj['cell_types']
         if not cell_types:
             raise ValueError("Cell type data are missing")

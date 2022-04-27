@@ -37,7 +37,7 @@ def run(args):
         response = client.get_json_data(organ_name, version_tag)
         for index, data_item in enumerate(response['data']):
             try:
-                o = o.mutate_cell_name(data_item)
+                o = o.mutate_cell_type(data_item)
                 o = o.mutate_cell_hierarchy(data_item)
                 o = o.mutate_cell_location(data_item)
             except ValueError as e:
