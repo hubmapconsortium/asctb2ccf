@@ -78,10 +78,7 @@ class BSOntology:
             raise ValueError("Cell type data are missing")
 
         for cell_type in cell_types:
-            ct_id = cell_type['id']
-            if not ct_id or ":" not in ct_id:
-                ct_pref_label = cell_type['name']
-                ct_id = self._generate_provisional_id(ct_pref_label)
+            ct_id = self._get_ct_id(cell_type)
             ct_iri = URIRef(self._expand_cell_type_id(ct_id))
 
             term_id = Literal(ct_id)
@@ -102,10 +99,7 @@ class BSOntology:
 
         parent_cell = None
         for cell_type in cell_types:
-            ct_id = cell_type['id']
-            if not ct_id or ":" not in ct_id:
-                ct_pref_label = cell_type['name']
-                ct_id = self._generate_provisional_id(ct_pref_label)
+            ct_id = self._get_ct_id(cell_type)
             ct_iri = URIRef(self._expand_cell_type_id(ct_id))
 
             # If the cell type is at the top of the list (parent is undefined),
@@ -135,16 +129,10 @@ class BSOntology:
             raise ValueError("Cell type data are missing")
 
         for cell_type in cell_types:
-            ct_id = cell_type['id']
-            if not ct_id or ":" not in ct_id:
-                ct_pref_label = cell_type['name']
-                ct_id = self._generate_provisional_id(ct_pref_label)
+            ct_id = self._get_ct_id(cell_type)
             ct_iri = URIRef(self._expand_cell_type_id(ct_id))
             for anatomical_structure in anatomical_structures:
-                as_id = anatomical_structure['id']
-                if not as_id or ":" not in as_id:
-                    as_pref_label = anatomical_structure["name"]
-                    as_id = self._generate_provisional_id(as_pref_label)
+                as_id = self._get_as_id(anatomical_structure)
                 as_iri = URIRef(self._expand_anatomical_entity_id(as_id))
                 self.graph.add((ct_iri, CCF.ccf_located_in, as_iri))
         return BSOntology(self.graph)
@@ -194,22 +182,9 @@ class BSOntology:
             raise ValueError("Anatomical structure data are missing")
 
         last_anatomical_structure = self._get_last_item(anatomical_structures)
-        anatomical_struct_id = last_anatomical_structure['id']
-        anatomical_struct_label = last_anatomical_structure['rdfs_label']
-        anatomical_struct_pref_name = anatomical_struct_label
-
-        # In the case the anatomical structure has a missing ID or ID is
-        # not yet available in the reference ontology
-        if not anatomical_struct_id or ":" not in anatomical_struct_id:
-            anatomical_struct_pref_name = last_anatomical_structure['name']
-            anatomical_struct_id =\
-                self._generate_provisional_id(anatomical_struct_pref_name)
-
-        iri = URIRef(self._expand_anatomical_entity_id(anatomical_struct_id))
-        label = Literal(anatomical_struct_label)
-        pref_label = Literal(anatomical_struct_pref_name)
-        term_id = Literal(anatomical_struct_id)
-        anatomical_structure = self._add_term_to_graph(iri)
+        as_id = self._get_as_id(last_anatomical_structure)
+        as_iri = URIRef(self._expand_anatomical_entity_id(as_id))
+        anatomical_structure = self._add_term_to_graph(as_iri)
 
         ######################################################
         # Construct the axioms about cell types
@@ -219,21 +194,9 @@ class BSOntology:
             raise ValueError("Cell type data are missing")
 
         last_cell_type = self._get_last_item(cell_types)
-        cell_type_id = last_cell_type['id']
-        cell_type_label = last_cell_type['rdfs_label']
-        cell_type_pref_label = cell_type_label
-
-        # In the case the cell type has a missing ID or ID is not yet available
-        # in the reference ontology
-        if not cell_type_id or ":" not in cell_type_id:
-            cell_type_pref_label = last_cell_type['name']
-            cell_type_id = self._generate_provisional_id(cell_type_pref_label)
-
-        iri = URIRef(self._expand_cell_type_id(cell_type_id))
-        label = Literal(cell_type_label)
-        pref_label = Literal(cell_type_pref_label)
-        term_id = Literal(cell_type_id)
-        cell_type = self._add_term_to_graph(iri)
+        ct_id = self._get_ct_id(last_cell_type)
+        ct_iri = URIRef(self._expand_cell_type_id(ct_id))
+        cell_type = self._add_term_to_graph(ct_iri)
 
         ######################################################
         # Construct the axioms about biomarkers
@@ -241,13 +204,9 @@ class BSOntology:
         biomarker_types = ['gene', 'protein']
         for biomarker_type in biomarker_types:
             for marker in obj['biomarkers_' + biomarker_type]:
-                marker_id = marker['id']
-                if self._is_valid_marker_id(marker_id):
-                    marker_name = marker['name']
-                    iri = URIRef(self._expand_biomarker_id(marker_id))
-                    label = Literal(marker_name)
-                    pref_label = Literal(marker_name)
-                    term_id = Literal(marker_id)
+                bm_id = marker['id']
+                if self._is_valid_marker_id(bm_id):
+                    iri = URIRef(self._expand_biomarker_id(bm_id))
                     self._add_term_to_graph(
                         iri,
                         subClassOf=CCF.biomarker)
@@ -281,12 +240,9 @@ class BSOntology:
             references = obj['references']
             if references:
                 bn = BNode()
-                cell_type_iri = URIRef(self._expand_cell_type_id(cell_type_id))
                 self.graph.add((bn, RDF.type, OWL.Axiom))
-                self.graph.add((bn, OWL.annotatedSource,
-                               cell_type_iri))
-                self.graph.add((bn, OWL.annotatedProperty,
-                               RDFS.subClassOf))
+                self.graph.add((bn, OWL.annotatedSource, ct_iri))
+                self.graph.add((bn, OWL.annotatedProperty, RDFS.subClassOf))
                 self.graph.add((bn, OWL.annotatedTarget,
                                characterizing_biomarker_set_expression
                                .identifier))
@@ -300,6 +256,20 @@ class BSOntology:
                             self.graph.add((bn, DCTERMS.references, doi_str))
 
         return BSOntology(self.graph)
+
+    def _get_as_id(self, anatomical_structure):
+        as_id = anatomical_structure['id']
+        if not as_id or ":" not in as_id:
+            as_pref_label = anatomical_structure['name']
+            as_id = self._generate_provisional_id(as_pref_label)
+        return as_id
+
+    def _get_ct_id(self, cell_type):
+        ct_id = cell_type['id']
+        if not ct_id or ":" not in ct_id:
+            ct_pref_label = cell_type['name']
+            ct_id = self._generate_provisional_id(ct_pref_label)
+        return ct_id
 
     def _add_term_to_graph(self, iri, subClassOf=None, label=None,
                            annotations=[]):
@@ -331,10 +301,6 @@ class BSOntology:
         return Restriction(property,
                            someValuesFrom=filler,
                            graph=self.graph)
-
-    def _remove_punctuations(self, str):
-        punctuation_excl_dash = punctuation.replace('-', '')
-        return str.translate(str.maketrans('', '', punctuation_excl_dash))
 
     def _expand_anatomical_entity_id(self, str):
         if "ASCTB-TEMP:" in str:
