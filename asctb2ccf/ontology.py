@@ -38,51 +38,37 @@ class BSOntology:
 
         return BSOntology(g)
 
-    def mutate_biological_structure(self, obj):
-        """
-        """
-        # Ignore getting non class object
-        obj_type = self._get_object_type(obj)
-        if obj_type != "http://www.w3.org/2002/07/owl#Class":
-            return BSOntology(self.graph)
+    def mutate_anatomical_structure(self, obj):
+        anatomical_structures = self._get_named_anatomical_structures(obj)
+        for anatomical_structure in anatomical_structures:
+            as_id = self._get_as_id(anatomical_structure)
+            as_iri = URIRef(self._expand_anatomical_entity_id(as_id))
 
-        iri = self._get_term_iri(obj)
-        asctb_type = self._get_asctb_type(obj)
-        pref_labels = self._get_term_prefLabels(obj)
-        term_ids = self._get_term_ids(obj)
-        object_restrictions = self._get_object_restrictions(obj)
+            term_id = Literal(as_id)
+            term_name = anatomical_structure['name']
+            if not term_name:
+                term_name = anatomical_structure['rdfs_label']
+            pref_label = Literal(term_name.lower())
+            asctb_type = Literal("AS")
 
-        if asctb_type.eq("AS"):
             self._add_term_to_graph(
-                iri,
-                annotations=[(OBOINOWL.id, term_ids),
-                             (CCF.ccf_pref_label, pref_labels),
-                             (CCF.ccf_asctb_type, [asctb_type]),
-                             (CCF.ccf_part_of, object_restrictions)])
-        #elif asctb_type.eq("CT"):
-            # NO-OP
-            # Replaced by the mutate_cell_names method
-        elif asctb_type.eq("BM"):
-            self._add_term_to_graph(
-                iri,
-                subClassOf=CCF.biomarker,
-                annotations=[(OBOINOWL.id, term_ids),
-                             (CCF.ccf_pref_label, pref_labels),
-                             (CCF.ccf_asctb_type, [asctb_type]),
-                             (CCF.ccf_characterizes, object_restrictions)])
+                as_iri,
+                annotations=[(OBOINOWL.id, [term_id]),
+                             (CCF.ccf_pref_label, [pref_label]),
+                             (CCF.ccf_asctb_type, [asctb_type])])
         return BSOntology(self.graph)
 
     def mutate_cell_type(self, obj):
-        cell_types = obj['cell_types']
-        if not cell_types:
-            raise ValueError("Cell type data are missing")
-
+        cell_types = self._get_named_cell_types(obj)
         for cell_type in cell_types:
             ct_id = self._get_ct_id(cell_type)
             ct_iri = URIRef(self._expand_cell_type_id(ct_id))
 
             term_id = Literal(ct_id)
-            pref_label = Literal(cell_type['name'].lower())
+            term_name = cell_type['name']
+            if not term_name:
+                term_name = cell_type['rdfs_label']
+            pref_label = Literal(term_name.lower())
             asctb_type = Literal("CT")
 
             self._add_term_to_graph(
@@ -92,24 +78,63 @@ class BSOntology:
                              (CCF.ccf_asctb_type, [asctb_type])])
         return BSOntology(self.graph)
 
-    def mutate_cell_hierarchy(self, obj):
-        cell_types = obj['cell_types']
-        if not cell_types:
-            raise ValueError("Cell type data are missing")
+    def mutate_biomarker(self, obj):
+        markers = self._get_named_biomarkers(obj)
+        for marker in markers:
+            bm_id = self._get_bm_id(marker)
+            bm_iri = URIRef(self._expand_biomarker_id(bm_id))
 
-        parent_cell = None
+            term_id = Literal(bm_id)
+            term_name = marker['name']
+            if not term_name:
+                term_name = marker['rdfs_label']
+            pref_label = Literal(term_name.lower())
+            asctb_type = Literal("BM")
+
+            self._add_term_to_graph(
+                bm_iri,
+                subClassOf=CCF.biomarker,
+                annotations=[(OBOINOWL.id, [term_id]),
+                             (CCF.ccf_pref_label, [pref_label]),
+                             (CCF.ccf_asctb_type, [asctb_type])])
+        return BSOntology(self.graph)
+
+    def mutate_partonomy(self, obj):
+        anatomical_structures = self._get_named_anatomical_structures(obj)
+
+        body = URIRef("http://purl.obolibrary.org/obo/UBERON_0013702")
+        self._add_term_to_graph(
+            body,
+            annotations=[(OBOINOWL.id, [Literal("UBERON:0013702")]),
+                         (CCF.ccf_pref_label, [Literal("body")])])
+        parent_part = body
+
+        for anatomical_structure in anatomical_structures:
+            as_id = self._get_as_id(anatomical_structure)
+            as_iri = URIRef(self._expand_anatomical_entity_id(as_id))
+
+            self._add_term_to_graph(
+                as_iri,
+                annotations=[(CCF.ccf_part_of, [parent_part])])
+
+            # The current anatomical structure is the parent part for
+            # the next anatomical structure.
+            parent_part = as_iri
+        return BSOntology(self.graph)
+
+    def mutate_cell_hierarchy(self, obj):
+        cell_types = self._get_named_cell_types(obj)
+
+        cell = URIRef("http://purl.obolibrary.org/obo/CL_0000000")
+        self._add_term_to_graph(
+            cell,
+            annotations=[(OBOINOWL.id, [Literal("CL:0000000")]),
+                         (CCF.ccf_pref_label, [Literal("cell")])])
+        parent_cell = cell
+
         for cell_type in cell_types:
             ct_id = self._get_ct_id(cell_type)
             ct_iri = URIRef(self._expand_cell_type_id(ct_id))
-
-            # If the cell type is at the top of the list (parent is undefined),
-            # then the class cell (CL:0000000) is the parent
-            if not parent_cell:
-                cell = URIRef("http://purl.obolibrary.org/obo/CL_0000000")
-                self._add_term_to_graph(
-                    cell,
-                    annotations=[(CCF.ccf_pref_label, [Literal("cell")])])
-                parent_cell = cell
 
             self._add_term_to_graph(
                 ct_iri,
@@ -120,14 +145,8 @@ class BSOntology:
         return BSOntology(self.graph)
 
     def mutate_cell_location(self, obj):
-        anatomical_structures = obj['anatomical_structures']
-        if not anatomical_structures:
-            raise ValueError("Anatomical structure data are missing")
-
-        cell_types = obj['cell_types']
-        if not cell_types:
-            raise ValueError("Cell type data are missing")
-
+        anatomical_structures = self._get_named_anatomical_structures(obj)
+        cell_types = self._get_named_cell_types(obj)
         for cell_type in cell_types:
             ct_id = self._get_ct_id(cell_type)
             ct_iri = URIRef(self._expand_cell_type_id(ct_id))
@@ -136,40 +155,6 @@ class BSOntology:
                 as_iri = URIRef(self._expand_anatomical_entity_id(as_id))
                 self.graph.add((ct_iri, CCF.ccf_located_in, as_iri))
         return BSOntology(self.graph)
-
-    def _get_term_iri(self, obj):
-        return URIRef(obj['@id'])
-
-    def _get_object_type(self, obj):
-        return obj['@type'][0]
-
-    def _get_asctb_type(self, obj):
-        asctb_type = 'http://purl.org/ccf/latest/ccf.owl#asctb_type'
-        return Literal(obj[asctb_type][0]['@value'])
-
-    def _get_term_labels(self, obj):
-        return [Literal(label['@value']) for
-                label in
-                obj['http://www.w3.org/2000/01/rdf-schema#label']]
-
-    def _get_term_prefLabels(self, obj):
-        return [Literal(pref_label['@value'].lower()) for
-                pref_label in
-                obj['http://purl.org/ccf/latest/ccf.owl#ccf_preferred_label']]
-
-    def _get_term_ids(self, obj):
-        return [Literal(term_id['@value']) for
-                term_id in
-                obj['http://www.geneontology.org/formats/oboInOwl#id']]
-
-    def _get_object_restrictions(self, obj):
-        some_values_from = 'http://www.w3.org/2002/07/owl#someValuesFrom'
-        if 'http://www.w3.org/2000/01/rdf-schema#subClassOf' in obj:
-            return [URIRef(restriction[some_values_from][0]['@id']) for
-                    restriction in
-                    obj['http://www.w3.org/2000/01/rdf-schema#subClassOf']]
-        else:
-            return []
 
     def mutate_cell_biomarker(self, obj):
         """
@@ -204,8 +189,8 @@ class BSOntology:
         biomarker_types = ['gene', 'protein']
         for biomarker_type in biomarker_types:
             for marker in obj['biomarkers_' + biomarker_type]:
-                bm_id = marker['id']
-                if self._is_valid_marker_id(bm_id):
+                if self._is_valid_marker(marker):
+                    bm_id = marker['id']
                     iri = URIRef(self._expand_biomarker_id(bm_id))
                     self._add_term_to_graph(
                         iri,
@@ -215,8 +200,13 @@ class BSOntology:
         # Construct the characterizing biomarker set class
         ######################################################
         biomarkers = obj['biomarkers']
+        if not biomarkers:
+            raise ValueError("Biomarker data are missing")
+
+        # Pick only valid HGNC markers. Markers with an empty ID are
+        # excluded, including ones with the ASCTB-TEMP prefix
         valid_biomarkers = [marker for marker in biomarkers
-                            if self._is_valid_marker_id(marker['id'])]
+                            if self._is_valid_marker(marker)]
         if valid_biomarkers:
             # Construct the characterizing biomarker set definition
             characterizing_biomarker_set =\
@@ -257,10 +247,29 @@ class BSOntology:
 
         return BSOntology(self.graph)
 
+    def _get_named_anatomical_structures(self, obj):
+        anatomical_structures = obj['anatomical_structures']
+        return [anatomical_structure for anatomical_structure
+                in anatomical_structures
+                if anatomical_structure['name']
+                or anatomical_structure['rdfs_label']]
+
+    def _get_named_cell_types(self, obj):
+        cell_types = obj['cell_types']
+        return [cell_type for cell_type in cell_types
+                if cell_type['name'] or cell_type['rdfs_label']]
+
+    def _get_named_biomarkers(self, obj):
+        markers = obj['biomarkers']
+        return [marker for marker in markers
+                if marker['name'] or marker['rdfs_label']]
+
     def _get_as_id(self, anatomical_structure):
         as_id = anatomical_structure['id']
         if not as_id or ":" not in as_id:
             as_pref_label = anatomical_structure['name']
+            if not as_pref_label:
+                as_pref_label = anatomical_structure['rdfs_label']
             as_id = self._generate_provisional_id(as_pref_label)
         return as_id
 
@@ -268,8 +277,19 @@ class BSOntology:
         ct_id = cell_type['id']
         if not ct_id or ":" not in ct_id:
             ct_pref_label = cell_type['name']
+            if not ct_pref_label:
+                ct_pref_label = cell_type['rdfs_label']
             ct_id = self._generate_provisional_id(ct_pref_label)
         return ct_id
+
+    def _get_bm_id(self, marker):
+        bm_id = marker['id']
+        if not self._is_valid_marker(marker):
+            bm_pref_label = marker['name']
+            if not bm_pref_label:
+                bm_pref_label = marker['rdfs_label']
+            bm_id = self._generate_provisional_id(bm_pref_label)
+        return bm_id
 
     def _add_term_to_graph(self, iri, subClassOf=None, label=None,
                            annotations=[]):
@@ -294,8 +314,8 @@ class BSOntology:
         str = re.sub('[^a-z0-9-]+', '', str)
         return f'ASCTB-TEMP:{str}'
 
-    def _is_valid_marker_id(self, str):
-        return str and re.match(r"HGNC:[0-9]+", str)
+    def _is_valid_marker(self, marker):
+        return marker['id'] and re.match(r"HGNC:[0-9]+", marker['id'])
 
     def _some_values_from(self, property, filler):
         return Restriction(property,

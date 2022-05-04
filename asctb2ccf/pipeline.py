@@ -28,19 +28,12 @@ def run(args):
                 logging.warning(str(e) +
                     f', row {index}, in <spreadsheet> {organ_name}')
     else:
-        # Construct the ontology base
-        response = client.get_jsonld_data(organ_name, version_tag)
-        for data_item in response:
-            o = o.mutate_biological_structure(data_item)
-
-        # Enrich the ontology base with cell location annotations
         response = client.get_json_data(organ_name, version_tag)
         for index, data_item in enumerate(response['data']):
-            try:
-                o = o.mutate_cell_type(data_item)
-                o = o.mutate_cell_hierarchy(data_item)
-                o = o.mutate_cell_location(data_item)
-            except ValueError as e:
-                logging.warning(str(e) +
-                    f', row {index}, in <spreadsheet> {organ_name}')
+            o = o.mutate_anatomical_structure(data_item)
+            o = o.mutate_cell_type(data_item)
+            o = o.mutate_biomarker(data_item)
+            o = o.mutate_partonomy(data_item)
+            o = o.mutate_cell_hierarchy(data_item)
+            o = o.mutate_cell_location(data_item)
     o.serialize(args.output)
