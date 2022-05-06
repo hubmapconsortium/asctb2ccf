@@ -267,7 +267,7 @@ class BSOntology:
             term_name = marker['name']
             if not term_name:
                 term_name = marker['rdfs_label']
-            pref_label = Literal(term_name.lower())
+            pref_label = Literal(term_name)
             asctb_type = Literal("BM")
 
             # If not a provisional term, the rdfs:label and rdf:SubClassOf rels
