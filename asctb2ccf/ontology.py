@@ -32,6 +32,19 @@ class BSOntology:
         # Ontology properties
         Ontology(identifier=URIRef(ontology_iri), graph=g)
 
+        # Default class hierarchy
+        uberon_entity = URIRef("http://purl.obolibrary.org/obo/UBERON_0001062")
+        Class(uberon_entity, subClassOf=[CCF.anatomical_structure], graph=g)
+
+        fma_entity = URIRef("http://purl.org/sig/ont/fma/fma62955")
+        Class(fma_entity, subClassOf=[CCF.anatomical_structure], graph=g)
+
+        cl_cell_type = URIRef("http://purl.obolibrary.org/obo/CL_0000000")
+        Class(cl_cell_type, subClassOf=[CCF.cell_type], graph=g)
+
+        lmha_cell_type = URIRef("http://purl.obolibrary.org/obo/LMHA_00135")
+        Class(lmha_cell_type, subClassOf=[CCF.cell_type], graph=g)
+
         # Patch classes
         kidney = URIRef("http://purl.obolibrary.org/obo/UBERON_0002113")
         left_kidney = URIRef("http://purl.obolibrary.org/obo/UBERON_0004538")
