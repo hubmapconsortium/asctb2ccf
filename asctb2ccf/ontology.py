@@ -185,7 +185,7 @@ class BSOntology:
     def mutate_anatomical_structure(self, obj):
         anatomical_structures = self._get_named_anatomical_structures(obj)
         for anatomical_structure in anatomical_structures:
-            as_id = self._get_as_id(anatomical_structure)
+            as_id, is_provisional = self._get_as_id(anatomical_structure)
             as_iri = URIRef(self._expand_anatomical_entity_id(as_id))
 
             term_id = Literal(as_id)
@@ -195,17 +195,28 @@ class BSOntology:
             pref_label = Literal(term_name.lower())
             asctb_type = Literal("AS")
 
+            # If not a provisional term, the rdfs:label and rdf:SubClassOf rels
+            # will be obtained from the reference ontology on another pipeline.
             self._add_term_to_graph(
                 as_iri,
                 annotations=[(OBOINOWL.id, [term_id]),
                              (CCF.ccf_pref_label, [pref_label]),
                              (CCF.ccf_asctb_type, [asctb_type])])
+
+            # Otherwise, the rdfs:label equals to the preferred label and
+            # the term is always a subclass of CCF:anatomical_structure
+            if is_provisional:
+                self._add_term_to_graph(
+                    as_iri,
+                    label=pref_label,
+                    subClassOf=CCF.anatomical_structure)
+
         return BSOntology(self.graph)
 
     def mutate_cell_type(self, obj):
         cell_types = self._get_named_cell_types(obj)
         for cell_type in cell_types:
-            ct_id = self._get_ct_id(cell_type)
+            ct_id, is_provisional = self._get_ct_id(cell_type)
             ct_iri = URIRef(self._expand_cell_type_id(ct_id))
 
             term_id = Literal(ct_id)
@@ -215,17 +226,27 @@ class BSOntology:
             pref_label = Literal(term_name.lower())
             asctb_type = Literal("CT")
 
+            # If not a provisional term, the rdfs:label and rdf:SubClassOf rels
+            # will be obtained from the reference ontology on another pipeline.
             self._add_term_to_graph(
                 ct_iri,
                 annotations=[(OBOINOWL.id, [term_id]),
                              (CCF.ccf_pref_label, [pref_label]),
                              (CCF.ccf_asctb_type, [asctb_type])])
+
+            # Otherwise, the rdfs:label equals to the preferred label and
+            # the term is always a subclass of CCF:cell_type
+            self._add_term_to_graph(
+                ct_iri,
+                label=pref_label,
+                subClassOf=CCF.cell_type)
+
         return BSOntology(self.graph)
 
     def mutate_biomarker(self, obj):
         markers = self._get_named_biomarkers(obj)
         for marker in markers:
-            bm_id = self._get_bm_id(marker)
+            bm_id, is_provisional = self._get_bm_id(marker)
             bm_iri = URIRef(self._expand_biomarker_id(bm_id))
 
             term_id = Literal(bm_id)
@@ -235,12 +256,20 @@ class BSOntology:
             pref_label = Literal(term_name.lower())
             asctb_type = Literal("BM")
 
+            # If not a provisional term, the rdfs:label and rdf:SubClassOf rels
+            # will be obtained from the reference ontology on another pipeline.
             self._add_term_to_graph(
                 bm_iri,
                 subClassOf=CCF.biomarker,
                 annotations=[(OBOINOWL.id, [term_id]),
                              (CCF.ccf_pref_label, [pref_label]),
                              (CCF.ccf_asctb_type, [asctb_type])])
+
+            # Otherwise, the rdfs:label equals to the preferred label
+            self._add_term_to_graph(
+                bm_iri,
+                label=pref_label)
+
         return BSOntology(self.graph)
 
     def mutate_partonomy(self, obj):
@@ -254,7 +283,7 @@ class BSOntology:
         parent_part = body
 
         for anatomical_structure in anatomical_structures:
-            as_id = self._get_as_id(anatomical_structure)
+            as_id, is_provisional = self._get_as_id(anatomical_structure)
             as_iri = URIRef(self._expand_anatomical_entity_id(as_id))
 
             self._add_term_to_graph(
@@ -277,7 +306,7 @@ class BSOntology:
         parent_cell = cell
 
         for cell_type in cell_types:
-            ct_id = self._get_ct_id(cell_type)
+            ct_id, is_provisional = self._get_ct_id(cell_type)
             ct_iri = URIRef(self._expand_cell_type_id(ct_id))
 
             self._add_term_to_graph(
@@ -292,10 +321,10 @@ class BSOntology:
         anatomical_structures = self._get_named_anatomical_structures(obj)
         cell_types = self._get_named_cell_types(obj)
         for cell_type in cell_types:
-            ct_id = self._get_ct_id(cell_type)
+            ct_id, is_provisional = self._get_ct_id(cell_type)
             ct_iri = URIRef(self._expand_cell_type_id(ct_id))
             for anatomical_structure in anatomical_structures:
-                as_id = self._get_as_id(anatomical_structure)
+                as_id, is_provisional = self._get_as_id(anatomical_structure)
                 as_iri = URIRef(self._expand_anatomical_entity_id(as_id))
                 self.graph.add((ct_iri, CCF.ccf_located_in, as_iri))
         return BSOntology(self.graph)
@@ -311,7 +340,7 @@ class BSOntology:
             raise ValueError("Anatomical structure data are missing")
 
         last_anatomical_structure = self._get_last_item(anatomical_structures)
-        as_id = self._get_as_id(last_anatomical_structure)
+        as_id, is_provisional = self._get_as_id(last_anatomical_structure)
         as_iri = URIRef(self._expand_anatomical_entity_id(as_id))
         anatomical_structure = self._add_term_to_graph(as_iri)
 
@@ -323,7 +352,7 @@ class BSOntology:
             raise ValueError("Cell type data are missing")
 
         last_cell_type = self._get_last_item(cell_types)
-        ct_id = self._get_ct_id(last_cell_type)
+        ct_id, is_provisional = self._get_ct_id(last_cell_type)
         ct_iri = URIRef(self._expand_cell_type_id(ct_id))
         cell_type = self._add_term_to_graph(ct_iri)
 
@@ -410,30 +439,36 @@ class BSOntology:
 
     def _get_as_id(self, anatomical_structure):
         as_id = anatomical_structure['id']
+        is_provisional = False
         if not as_id or ":" not in as_id:
             as_pref_label = anatomical_structure['name']
             if not as_pref_label:
                 as_pref_label = anatomical_structure['rdfs_label']
             as_id = self._generate_provisional_id(as_pref_label)
-        return as_id
+            is_provisional = True
+        return as_id, is_provisional
 
     def _get_ct_id(self, cell_type):
         ct_id = cell_type['id']
+        is_provisional = False
         if not ct_id or ":" not in ct_id:
             ct_pref_label = cell_type['name']
             if not ct_pref_label:
                 ct_pref_label = cell_type['rdfs_label']
             ct_id = self._generate_provisional_id(ct_pref_label)
-        return ct_id
+            is_provisional = True
+        return ct_id, is_provisional
 
     def _get_bm_id(self, marker):
         bm_id = marker['id']
+        is_provisional = False
         if not self._is_valid_marker(marker):
             bm_pref_label = marker['name']
             if not bm_pref_label:
                 bm_pref_label = marker['rdfs_label']
             bm_id = self._generate_provisional_id(bm_pref_label)
-        return bm_id
+            is_provisional = True
+        return bm_id, is_provisional
 
     def _add_term_to_graph(self, iri, subClassOf=None, label=None,
                            annotations=[]):

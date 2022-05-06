@@ -23,6 +23,8 @@ class CCF(DefinedNamespace):
     ccf_ct_isa: URIRef
 
     # http://www.w3.org/2002/07/owl#Class
+    anatomical_structure: URIRef
+    cell_type: URIRef
     biomarker: URIRef
     characterizing_biomarker_set: URIRef
 
