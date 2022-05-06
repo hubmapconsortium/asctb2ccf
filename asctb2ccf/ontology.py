@@ -249,10 +249,11 @@ class BSOntology:
 
             # Otherwise, the rdfs:label equals to the preferred label and
             # the term is always a subclass of CCF:cell_type
-            self._add_term_to_graph(
-                ct_iri,
-                label=pref_label,
-                subClassOf=CCF.cell_type)
+            if is_provisional:
+                self._add_term_to_graph(
+                    ct_iri,
+                    label=pref_label,
+                    subClassOf=CCF.cell_type)
 
         return BSOntology(self.graph)
 
@@ -279,9 +280,10 @@ class BSOntology:
                              (CCF.ccf_asctb_type, [asctb_type])])
 
             # Otherwise, the rdfs:label equals to the preferred label
-            self._add_term_to_graph(
-                bm_iri,
-                label=pref_label)
+            if is_provisional:
+                self._add_term_to_graph(
+                    bm_iri,
+                    label=pref_label)
 
         return BSOntology(self.graph)
 
