@@ -4,7 +4,7 @@ from string import punctuation
 from stringcase import lowercase, snakecase
 
 from rdflib import Graph, URIRef, Literal
-from rdflib.namespace import OWL, RDF, RDFS, DCTERMS
+from rdflib.namespace import OWL, RDF, RDFS, XSD, DCTERMS
 from rdflib.extras.infixowl import Ontology, Property, Class, Restriction,\
     BNode, BooleanClass
 
@@ -231,9 +231,7 @@ class BSOntology:
                 self._add_term_to_graph(
                     as_iri,
                     label=pref_label,
-                    subClassOf=CCF.anatomical_structure,
-                    annotations=[(OBO.IAO_0000115, [provisional_definition]),
-                                 (CCF.ccf_is_provisional, [is_provisional])])
+                    subClassOf=CCF.anatomical_structure)
                 self._add_provisional_definition(as_iri)
 
         return BSOntology(self.graph)
