@@ -198,6 +198,7 @@ class BSOntology:
         Property(CCF.ccf_located_in, baseType=OWL.AnnotationProperty, graph=g)
         Property(CCF.ccf_characterizes, baseType=OWL.AnnotationProperty, graph=g)
         Property(CCF.ccf_asctb_type, baseType=OWL.AnnotationProperty, graph=g)
+        Property(CCF.ccf_as_isa, baseType=OWL.AnnotationProperty, graph=g)
         Property(CCF.ccf_ct_isa, baseType=OWL.AnnotationProperty, graph=g)
         Property(CCF.ccf_is_provisional, baseType=OWL.AnnotationProperty, graph=g)
 
@@ -316,7 +317,8 @@ class BSOntology:
 
             self._add_term_to_graph(
                 as_iri,
-                annotations=[(CCF.ccf_part_of, [parent_part])])
+                annotations=[(CCF.ccf_as_isa, [parent_part]),
+                             (CCF.ccf_part_of, [parent_part])])
 
             # The current anatomical structure is the parent part for
             # the next anatomical structure.
