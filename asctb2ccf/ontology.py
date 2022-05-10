@@ -191,7 +191,15 @@ class BSOntology:
 
         # Some definitions
         Property(DCTERMS.references, baseType=OWL.AnnotationProperty, graph=g)
-        Property(CCF.has_marker_component, baseType=OWL.ObjectProperty, graph=g)
+        Property(OBO.IAO_0000115, baseType=OWL.AnnotationProperty, graph=g)
+        Property(OBOINOWL.id, baseType=OWL.AnnotationProperty, graph=g)
+        Property(CCF.ccf_pref_label, baseType=OWL.AnnotationProperty, graph=g)
+        Property(CCF.ccf_part_of, baseType=OWL.AnnotationProperty, graph=g)
+        Property(CCF.ccf_located_in, baseType=OWL.AnnotationProperty, graph=g)
+        Property(CCF.ccf_characterizes, baseType=OWL.AnnotationProperty, graph=g)
+        Property(CCF.ccf_asctb_type, baseType=OWL.AnnotationProperty, graph=g)
+        Property(CCF.ccf_ct_isa, baseType=OWL.AnnotationProperty, graph=g)
+        Property(CCF.ccf_is_provisional, baseType=OWL.AnnotationProperty, graph=g)
 
         return BSOntology(g)
 
