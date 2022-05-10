@@ -513,9 +513,7 @@ class BSOntology:
 
     def _add_provisional_definition(self, iri):
         provisional_definition =\
-            Literal("This term is a temporary placeholder based on \
-                    expert recommendation and it is NOT in a stable \
-                    version")
+            Literal("This term is a temporary placeholder based on expert recommendation and it is NOT in a stable version")
         is_provisional = Literal("true", datatype=XSD.boolean)
         self.graph.add((iri, OBO.IAO_0000115, provisional_definition))
         self.graph.add((iri, CCF.ccf_is_provisional, is_provisional))
