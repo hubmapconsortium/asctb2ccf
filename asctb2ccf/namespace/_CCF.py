@@ -21,6 +21,7 @@ class CCF(DefinedNamespace):
     ccf_characterizes: URIRef
     ccf_asctb_type: URIRef
     ccf_ct_isa: URIRef
+    ccf_is_provisional: URIRef
 
     # http://www.w3.org/2002/07/owl#Class
     anatomical_structure: URIRef

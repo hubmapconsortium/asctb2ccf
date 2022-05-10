@@ -222,7 +222,10 @@ class BSOntology:
                 self._add_term_to_graph(
                     as_iri,
                     label=pref_label,
-                    subClassOf=CCF.anatomical_structure)
+                    subClassOf=CCF.anatomical_structure,
+                    annotations=[(OBO.IAO_0000115, [provisional_definition]),
+                                 (CCF.ccf_is_provisional, [is_provisional])])
+                self._add_provisional_definition(as_iri)
 
         return BSOntology(self.graph)
 
@@ -254,6 +257,7 @@ class BSOntology:
                     ct_iri,
                     label=pref_label,
                     subClassOf=CCF.cell_type)
+                self._add_provisional_definition(ct_iri)
 
         return BSOntology(self.graph)
 
@@ -284,6 +288,7 @@ class BSOntology:
                 self._add_term_to_graph(
                     bm_iri,
                     label=pref_label)
+                self._add_provisional_definition(bm_iri)
 
         return BSOntology(self.graph)
 
@@ -497,6 +502,15 @@ class BSOntology:
             for value in values:
                 self.graph.add((iri, property_name, value))
         return term
+
+    def _add_provisional_definition(self, iri):
+        provisional_definition =\
+            Literal("This term is a temporary placeholder based on \
+                    expert recommendation and it is NOT in a stable \
+                    version")
+        is_provisional = Literal("true", datatype=XSD.boolean)
+        self.graph.add((iri, OBO.IAO_0000115, provisional_definition))
+        self.graph.add((iri, CCF.ccf_is_provisional, is_provisional))
 
     def _get_last_item(self, arr):
         return next(item for item in reversed(arr) if item and 'id' in item)

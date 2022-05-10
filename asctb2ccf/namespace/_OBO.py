@@ -17,6 +17,7 @@ class OBO(DefinedNamespace):
     # http://www.w3.org/2002/07/owl#DataProperty
 
     # http://www.w3.org/2002/07/owl#AnnotationProperty
+    IAO_0000115: URIRef  # definition
 
     # http://www.w3.org/2002/07/owl#Class
     UBERON_0001062: URIRef  # anatomical entity
