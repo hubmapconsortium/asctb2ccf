@@ -20,7 +20,6 @@ class CCF(DefinedNamespace):
     ccf_located_in: URIRef
     ccf_characterizes: URIRef
     ccf_asctb_type: URIRef
-    ccf_as_isa: URIRef
     ccf_ct_isa: URIRef
     ccf_is_provisional: URIRef
 
