@@ -21,30 +21,56 @@ class AsctbReporterClient:
     def __init__(self, gid_map):
         self.gid_map = gid_map
 
-    def get_json_data(self, organ_name, version_tag="latest"):
-        return self.get_data(organ_name, version_tag, "json")
-
-    def get_jsonld_data(self, organ_name, version_tag="latest"):
-        return self.get_data(organ_name, version_tag, "jsonld")
-
-    def get_data(self, organ_name, version_tag="latest", format="json"):
-        """Returns the ontology resource in a specific format given
-           the organ name.
+    def get_data_by_parameters(self,
+                               organ_name,
+                               version_tag="latest",
+                               format="json"):
+        """Returns the ASCT+B table in a specific output format given
+           the organ name and the version tag
 
         Args:
             organ_name (str): The human organ name.
+            version_tag (str): The version tag (default="latest")
+            format (str): The output format (default="json")
 
         Returns:
-            An object containing the ontology resource.
+            The ASCT+B table in the given output format
         """
-        csvUrl = self.get_export_csv_url(organ_name, version_tag)
-        base_endpoint = f'{self._BASE_URL}/{self._VERSION}/{self._CSV}'
-        url = f'{base_endpoint}?{self._OUTPUT}={format}&{self._CSV_URL}={csvUrl}'
-        response = json_handler(url)
+        export_csv_url =\
+            self._get_export_csv_url_by_parameters(organ_name, version_tag)
+        return self._get_data(export_csv_url, format)
 
+    def get_data_by_gsheet_url(self,
+                               gsheet_url,
+                               format="json"):
+        """Returns the ASCT+B table in a specific output format given
+           the Google Sheet URL.
+
+        Args:
+            gsheet_url (str): The Google Sheet URL that contains
+                the ASCT+B table data. Do a copy-and-paste from the
+                web browser to get the URL. Make sure the URL
+                structure looks like the following example:
+                https://docs.google.com/spreadsheets/d/1PgjYp4MEWANfbxGIxFsJ9vkfEU90MP-v3p5oVlH8U-E/edit#gid=949267305
+            format (str): The output format (default="json")
+
+        Returns:
+            The ASCT+B table in the given output format
+        """
+        export_csv_url = self._get_export_csv_url_by_gsheet_url(gsheet_url)
+        return self._get_data(export_csv_url, format)
+
+    def _get_data(self, export_csv_url, format):
+        base_endpoint = f"{self._BASE_URL}/{self._VERSION}/{self._CSV}"
+        options = f"{self._OUTPUT}={format}&{self._CSV_URL}={export_csv_url}"
+        url = f"{base_endpoint}?{options}"
+        response = json_handler(url)
         return response
 
-    def get_export_csv_url(self, organ_name, version_tag="latest"):
-        sheet_url = self.gid_map[organ_name][version_tag]
-        export_url = sheet_url.replace('edit#', 'export?')
+    def _get_export_csv_url_by_parameters(self, organ_name, version_tag):
+        export_url = self.gid_map[organ_name][version_tag]
+        return quote_plus(export_url)
+
+    def _get_export_csv_url_by_gsheet_url(self, gsheet_url):
+        export_url = gsheet_url.replace('edit#', 'export?')
         return quote_plus(f'{export_url}&format=csv')

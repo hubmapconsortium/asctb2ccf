@@ -16,19 +16,29 @@ def run(args):
     client = AsctbReporterClient(gid_map)
 
     o = BSOntology.new(args.ontology_iri)
+    gsheet_url = args.gsheet_url
     organ_name = args.organ_name
     version_tag = args.version_tag
 
     if args.cell_biomarkers_only:
-        response = client.get_json_data(organ_name, version_tag)
+        response = {}
+        if gsheet_url:
+            response = client.get_data_by_gsheet_url(gsheet_url)
+        else:
+            response = client.get_data_by_parameters(organ_name, version_tag)
+
         for index, data_item in enumerate(response['data']):
             try:
                 o = o.mutate_cell_biomarker(data_item)
             except ValueError as e:
                 logging.warning(str(e) +
-                    f', row {index}, in <spreadsheet> {organ_name}')
+                    f", row {index}, in <spreadsheet> {organ_name}")
     else:
-        response = client.get_json_data(organ_name, version_tag)
+        response = {}
+        if gsheet_url:
+            response = client.get_data_by_gsheet_url(gsheet_url)
+        else:
+            response = client.get_data_by_parameters(organ_name, version_tag)
         for index, data_item in enumerate(response['data']):
             o = o.mutate_anatomical_structure(data_item)
             o = o.mutate_cell_type(data_item)
