@@ -1,4 +1,4 @@
-from asctb2ccf.namespace import OBO, CCF, OBOINOWL
+from asctb2ccf.namespace import OBO, CCF, HGNC, OBOINOWL
 
 from string import punctuation
 from stringcase import lowercase, snakecase
@@ -24,6 +24,7 @@ class BSOntology:
         g = Graph()
         g.bind('ccf', CCF)
         g.bind('obo', OBO)
+        g.bind('hgnc', HGNC)
         g.bind('owl', OWL)
         g.bind('rdf', RDF)
         g.bind('rdfs', RDFS)
@@ -41,6 +42,9 @@ class BSOntology:
 
         cl_cell_type = URIRef("http://purl.obolibrary.org/obo/CL_0000000")
         Class(cl_cell_type, subClassOf=[CCF.cell_type], graph=g)
+
+        hgnc_gene = URIRef("http://purl.bioontology.org/ontology/HGNC/gene")
+        Class(hgnc_gene, subClassOf=[CCF.biomarker], graph=g)
 
         # Patch classes
         kidney = URIRef("http://purl.obolibrary.org/obo/UBERON_0002113")
@@ -281,7 +285,6 @@ class BSOntology:
             # will be obtained from the reference ontology on another pipeline.
             self._add_term_to_graph(
                 bm_iri,
-                subClassOf=CCF.biomarker,
                 annotations=[(OBOINOWL.id, [term_id]),
                              (CCF.ccf_pref_label, [pref_label]),
                              (CCF.ccf_asctb_type, [asctb_type])])
@@ -290,6 +293,7 @@ class BSOntology:
             if is_provisional:
                 self._add_term_to_graph(
                     bm_iri,
+                    subClassOf=CCF.biomarker,
                     label=pref_label)
                 self._add_provisional_definition(bm_iri)
 
@@ -388,9 +392,7 @@ class BSOntology:
                 if self._is_valid_marker(marker):
                     bm_id = marker['id']
                     iri = URIRef(self._expand_biomarker_id(bm_id))
-                    self._add_term_to_graph(
-                        iri,
-                        subClassOf=CCF.biomarker)
+                    self._add_term_to_graph(iri)
 
         ######################################################
         # Construct the characterizing biomarker set class

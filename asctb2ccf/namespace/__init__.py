@@ -125,5 +125,6 @@ class DefinedNamespace(metaclass=DefinedNamespaceMeta):
         raise TypeError("namespace may not be instantiated")
 
 from asctb2ccf.namespace._CCF import CCF
+from asctb2ccf.namespace._HGNC import HGNC
 from asctb2ccf.namespace._OBO import OBO
 from asctb2ccf.namespace._OBOINOWL import OBOINOWL
