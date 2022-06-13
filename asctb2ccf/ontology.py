@@ -42,9 +42,6 @@ class BSOntology:
         cl_cell_type = URIRef("http://purl.obolibrary.org/obo/CL_0000000")
         Class(cl_cell_type, subClassOf=[CCF.cell_type], graph=g)
 
-        lmha_cell_type = URIRef("http://purl.obolibrary.org/obo/LMHA_00135")
-        Class(lmha_cell_type, subClassOf=[CCF.cell_type], graph=g)
-
         # Patch classes
         kidney = URIRef("http://purl.obolibrary.org/obo/UBERON_0002113")
         left_kidney = URIRef("http://purl.obolibrary.org/obo/UBERON_0004538")
@@ -559,8 +556,6 @@ class BSOntology:
             return self._expand_asctb_temp_id(str)
         elif "CL:" in str:
             return self._expand_cl_id(str)
-        elif "LMHA:" in str:
-            return self._expand_lmha_id(str)
         elif "FMA:" in str:
             return self._expand_fma_id(str)
         else:
@@ -570,11 +565,6 @@ class BSOntology:
         cl_pattern = re.compile("CL:", re.IGNORECASE)
         return cl_pattern.sub(
             "http://purl.obolibrary.org/obo/CL_", str)
-
-    def _expand_lmha_id(self, str):
-        lmha_pattern = re.compile("LMHA:", re.IGNORECASE)
-        return lmha_pattern.sub(
-            "http://purl.obolibrary.org/obo/LMHA_", str)
 
     def _expand_biomarker_id(self, str):
         if "ASCTB-TEMP:" in str:
