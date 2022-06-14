@@ -240,8 +240,10 @@ class BSOntology:
         cell_types = self._get_named_cell_types(obj)
         for cell_type in cell_types:
             ct_id, is_provisional = self._get_ct_id(cell_type)
-            ct_iri = URIRef(self._expand_cell_type_id(ct_id))
+            if "LMHA" in ct_id:
+                continue
 
+            ct_iri = URIRef(self._expand_cell_type_id(ct_id))
             term_id = Literal(ct_id)
             term_name = cell_type['name']
             if not term_name:
@@ -334,8 +336,10 @@ class BSOntology:
 
         for cell_type in cell_types:
             ct_id, is_provisional = self._get_ct_id(cell_type)
-            ct_iri = URIRef(self._expand_cell_type_id(ct_id))
+            if "LMHA" in ct_id:
+                continue
 
+            ct_iri = URIRef(self._expand_cell_type_id(ct_id))
             self._add_term_to_graph(
                 ct_iri,
                 annotations=[(CCF.ccf_ct_isa, [parent_cell])])
@@ -349,6 +353,8 @@ class BSOntology:
         cell_types = self._get_named_cell_types(obj)
         for cell_type in cell_types:
             ct_id, is_provisional = self._get_ct_id(cell_type)
+            if "LMHA" in ct_id:
+                continue
             ct_iri = URIRef(self._expand_cell_type_id(ct_id))
             for anatomical_structure in anatomical_structures:
                 as_id, is_provisional = self._get_as_id(anatomical_structure)
