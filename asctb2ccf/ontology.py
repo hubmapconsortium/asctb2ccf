@@ -190,6 +190,13 @@ class BSOntology:
         g.add((right_ureter, CCF.ccf_pref_label, Literal("right ureter")))
         g.add((right_ureter, CCF.ccf_part_of, ureter))
 
+        spinal_cord = URIRef("http://purl.obolibrary.org/obo/UBERON_0002240")
+        Class(spinal_cord, graph=g)
+        g.add((spinal_cord, OBOINOWL.id, Literal("UBERON:0002240")))
+        g.add((spinal_cord, CCF.ccf_asctb_type, Literal("AS")))
+        g.add((spinal_cord, CCF.ccf_pref_label, Literal("spinal cord")))
+        g.add((spinal_cord, CCF.ccf_part_of, body))
+
         # Some definitions
         Property(DCTERMS.references, baseType=OWL.AnnotationProperty, graph=g)
         Property(OBO.IAO_0000115, baseType=OWL.AnnotationProperty, graph=g)
