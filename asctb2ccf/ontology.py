@@ -495,6 +495,8 @@ class BSOntology:
                 ct_pref_label = cell_type['rdfs_label']
             ct_id = self._generate_provisional_id(ct_pref_label)
             is_provisional = True
+        if "PCL:" in ct_id:
+            is_provisional = True
         return ct_id, is_provisional
 
     def _get_bm_id(self, marker):
@@ -569,6 +571,8 @@ class BSOntology:
     def _expand_cell_type_id(self, str):
         if "ASCTB-TEMP:" in str:
             return self._expand_asctb_temp_id(str)
+        elif "PCL:" in str:
+            return self._expand_pcl_id(str)
         elif "CL:" in str:
             return self._expand_cl_id(str)
         elif "FMA:" in str:
@@ -580,6 +584,11 @@ class BSOntology:
         cl_pattern = re.compile("CL:", re.IGNORECASE)
         return cl_pattern.sub(
             "http://purl.obolibrary.org/obo/CL_", str)
+
+    def _expand_pcl_id(self, str):
+        pcl_pattern = re.compile("PCL:", re.IGNORECASE)
+        return pcl_pattern.sub(
+            "http://purl.obolibrary.org/obo/PCL_", str)
 
     def _expand_biomarker_id(self, str):
         if "ASCTB-TEMP:" in str:
