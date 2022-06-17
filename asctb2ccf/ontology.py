@@ -121,10 +121,9 @@ class BSOntology:
         g.add((left_eye, CCF.ccf_pref_label, Literal("left eye")))
         g.add((left_eye, CCF.ccf_part_of, eye))
 
-        # right_eye = URIRef("http://purl.obolibrary.org/obo/UBERON_0004549")
-        right_eye = URIRef("http://purl.org/sig/ont/fma/fma54449")
+        right_eye = URIRef("http://purl.obolibrary.org/obo/UBERON_0004549")
         Class(right_eye, graph=g)
-        g.add((right_eye, OBOINOWL.id, Literal("FMA:54449")))
+        g.add((right_eye, OBOINOWL.id, Literal("UBERON:0004549")))
         g.add((right_eye, CCF.ccf_asctb_type, Literal("AS")))
         g.add((right_eye, CCF.ccf_pref_label, Literal("right eye")))
         g.add((right_eye, CCF.ccf_part_of, eye))
