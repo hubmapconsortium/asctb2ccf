@@ -43,6 +43,9 @@ class BSOntology:
         cl_cell_type = URIRef("http://purl.obolibrary.org/obo/CL_0000000")
         Class(cl_cell_type, subClassOf=[CCF.cell_type], graph=g)
 
+        lmha_cell_type = URIRef("http://purl.obolibrary.org/obo/LMHA_00135")
+        Class(lmha_cell_type, subClassOf=[CCF.cell_type], graph=g)
+
         hgnc_gene = URIRef("http://purl.bioontology.org/ontology/HGNC/gene")
         Class(hgnc_gene, subClassOf=[CCF.biomarker], graph=g)
 
@@ -246,9 +249,6 @@ class BSOntology:
         cell_types = self._get_named_cell_types(obj)
         for cell_type in cell_types:
             ct_id, is_provisional = self._get_ct_id(cell_type)
-            if "LMHA" in ct_id:
-                continue
-
             ct_iri = URIRef(self._expand_cell_type_id(ct_id))
             term_id = Literal(ct_id)
             term_name = cell_type['name']
@@ -342,9 +342,6 @@ class BSOntology:
 
         for cell_type in cell_types:
             ct_id, is_provisional = self._get_ct_id(cell_type)
-            if "LMHA" in ct_id:
-                continue
-
             ct_iri = URIRef(self._expand_cell_type_id(ct_id))
             self._add_term_to_graph(
                 ct_iri,
@@ -359,8 +356,6 @@ class BSOntology:
         cell_types = self._get_named_cell_types(obj)
         for cell_type in cell_types:
             ct_id, is_provisional = self._get_ct_id(cell_type)
-            if "LMHA" in ct_id:
-                continue
             ct_iri = URIRef(self._expand_cell_type_id(ct_id))
             for anatomical_structure in anatomical_structures:
                 as_id, is_provisional = self._get_as_id(anatomical_structure)
@@ -574,6 +569,8 @@ class BSOntology:
             return self._expand_pcl_id(str)
         elif "CL:" in str:
             return self._expand_cl_id(str)
+        elif "LMHA:" in str:
+            return self._expand_lmha_id(str)
         elif "FMA:" in str:
             return self._expand_fma_id(str)
         else:
@@ -583,6 +580,11 @@ class BSOntology:
         cl_pattern = re.compile("CL:", re.IGNORECASE)
         return cl_pattern.sub(
             "http://purl.obolibrary.org/obo/CL_", str)
+
+    def _expand_lmha_id(self, str):
+        lmha_pattern = re.compile("LMHA:", re.IGNORECASE)
+        return lmha_pattern.sub(
+            "http://purl.obolibrary.org/obo/LMHA_", str)
 
     def _expand_pcl_id(self, str):
         pcl_pattern = re.compile("PCL:", re.IGNORECASE)
