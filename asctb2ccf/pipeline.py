@@ -40,10 +40,14 @@ def run(args):
         else:
             response = client.get_data_by_parameters(organ_name, version_tag)
         for index, data_item in enumerate(response['data']):
-            o = o.mutate_anatomical_structure(data_item)
-            o = o.mutate_cell_type(data_item)
-            o = o.mutate_biomarker(data_item)
-            o = o.mutate_partonomy(data_item)
-            o = o.mutate_cell_hierarchy(data_item)
-            o = o.mutate_cell_location(data_item)
+            try:
+                o = o.mutate_anatomical_structure(data_item)
+                o = o.mutate_cell_type(data_item)
+                o = o.mutate_biomarker(data_item)
+                o = o.mutate_partonomy(data_item)
+                o = o.mutate_cell_hierarchy(data_item)
+                o = o.mutate_cell_location(data_item)
+            except ValueError as e:
+                logging.warning(str(e) +
+                    f", row {index}, in <spreadsheet> {organ_name}")
     o.serialize(args.output)
