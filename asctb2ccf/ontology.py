@@ -54,6 +54,12 @@ class BSOntology:
 
         if "kidney" in ontology_iri:
             kidney = URIRef("http://purl.obolibrary.org/obo/UBERON_0002113")
+            Class(kidney, graph=g)
+            g.add((kidney, OBOINOWL.id, Literal("UBERON:0002113")))
+            g.add((kidney, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((kidney, CCF.ccf_pref_label, Literal("kidney")))
+            g.add((kidney, CCF.ccf_part_of, body))
+
             left_kidney = URIRef("http://purl.obolibrary.org/obo/UBERON_0004538")
             Class(left_kidney, graph=g)
             g.add((left_kidney, OBOINOWL.id, Literal("UBERON:0004538")))
@@ -82,7 +88,7 @@ class BSOntology:
             g.add((bone_marrow, OBOINOWL.id, Literal("UBERON:0002371")))
             g.add((bone_marrow, CCF.ccf_asctb_type, Literal("AS")))
             g.add((bone_marrow, CCF.ccf_pref_label, Literal("bone marrow")))
-            g.add((bone_marrow, CCF.ccf_part_of, pelvis))
+            g.add((bone_marrow, CCF.ccf_part_of, body))
 
         if "blood" in ontology_iri:
             blood = URIRef("http://purl.obolibrary.org/obo/UBERON_0000178")
@@ -90,7 +96,7 @@ class BSOntology:
             g.add((blood, OBOINOWL.id, Literal("UBERON:0000178")))
             g.add((blood, CCF.ccf_asctb_type, Literal("AS")))
             g.add((blood, CCF.ccf_pref_label, Literal("blood")))
-            g.add((blood, CCF.ccf_part_of, pelvis))
+            g.add((blood, CCF.ccf_part_of, body))
 
         if "blood_vasculature" in ontology_iri:
             blood_vas = URIRef("http://purl.obolibrary.org/obo/UBERON_0004537")
@@ -117,6 +123,12 @@ class BSOntology:
 
         if "lymph_node" in ontology_iri:
             lymph_node = URIRef("http://purl.obolibrary.org/obo/UBERON_0000029")
+            Class(lymph_node, graph=g)
+            g.add((lymph_node, OBOINOWL.id, Literal("UBERON:0000029")))
+            g.add((lymph_node, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((lymph_node, CCF.ccf_pref_label, Literal("lymph node")))
+            g.add((lymph_node, CCF.ccf_part_of, body))
+
             mesenteric_ln = URIRef("http://purl.obolibrary.org/obo/UBERON_0002509")
             Class(mesenteric_ln, graph=g)
             g.add((mesenteric_ln, OBOINOWL.id, Literal("UBERON:0002509")))
@@ -126,6 +138,12 @@ class BSOntology:
 
         if "eye" in ontology_iri:
             eye = URIRef("http://purl.obolibrary.org/obo/UBERON_0000970")
+            Class(eye, graph=g)
+            g.add((eye, OBOINOWL.id, Literal("UBERON:0000970")))
+            g.add((eye, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((eye, CCF.ccf_pref_label, Literal("eye")))
+            g.add((eye, CCF.ccf_part_of, body))
+
             left_eye = URIRef("http://purl.obolibrary.org/obo/UBERON_0004548")
             Class(left_eye, graph=g)
             g.add((left_eye, OBOINOWL.id, Literal("UBERON:0004548")))
@@ -142,6 +160,12 @@ class BSOntology:
 
         if "fallopian_tube" in ontology_iri:
             fallopian_tb = URIRef("http://purl.obolibrary.org/obo/UBERON_0003889")
+            Class(fallopian_tb, graph=g)
+            g.add((fallopian_tb, OBOINOWL.id, Literal("UBERON:0003889")))
+            g.add((fallopian_tb, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((fallopian_tb, CCF.ccf_pref_label, Literal("fallopian tube")))
+            g.add((fallopian_tb, CCF.ccf_part_of, body))
+
             left_tube = URIRef("http://purl.obolibrary.org/obo/UBERON_0001303")
             Class(left_tube, graph=g)
             g.add((left_tube, OBOINOWL.id, Literal("UBERON:0001303")))
@@ -159,6 +183,12 @@ class BSOntology:
 
         if "knee" in ontology_iri:
             knee = URIRef("http://purl.obolibrary.org/obo/UBERON_0001465")
+            Class(knee, graph=g)
+            g.add((knee, OBOINOWL.id, Literal("UBERON:0001465")))
+            g.add((knee, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((knee, CCF.ccf_pref_label, Literal("knee")))
+            g.add((knee, CCF.ccf_part_of, body))
+
             left_knee = URIRef("http://purl.org/sig/ont/fma/fma24978")
             Class(left_knee, graph=g)
             g.add((left_knee, OBOINOWL.id, Literal("FMA:24978")))
@@ -175,6 +205,12 @@ class BSOntology:
 
         if "ovary" in ontology_iri:
             ovary = URIRef("http://purl.obolibrary.org/obo/UBERON_0000992")
+            Class(ovary, graph=g)
+            g.add((ovary, OBOINOWL.id, Literal("UBERON:0000992")))
+            g.add((ovary, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((ovary, CCF.ccf_pref_label, Literal("ovary")))
+            g.add((ovary, CCF.ccf_part_of, body))
+
             left_ovary = URIRef("http://purl.org/sig/ont/fma/fma7214")
             Class(left_ovary, graph=g)
             g.add((left_ovary, OBOINOWL.id, Literal("FMA:7214")))
@@ -191,6 +227,12 @@ class BSOntology:
 
         if "ureter" in ontology_iri:
             ureter = URIRef("http://purl.obolibrary.org/obo/UBERON_0000056")
+            Class(ureter, graph=g)
+            g.add((ureter, OBOINOWL.id, Literal("UBERON:0000056")))
+            g.add((ureter, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((ureter, CCF.ccf_pref_label, Literal("ureter")))
+            g.add((ureter, CCF.ccf_part_of, body))
+
             left_ureter = URIRef("http://purl.obolibrary.org/obo/UBERON_0001223")
             Class(left_ureter, graph=g)
             g.add((left_ureter, OBOINOWL.id, Literal("UBERON:0001223")))
@@ -220,6 +262,28 @@ class BSOntology:
             g.add((breast, CCF.ccf_asctb_type, Literal("AS")))
             g.add((breast, CCF.ccf_pref_label, Literal("breast")))
             g.add((breast, CCF.ccf_part_of, body))
+
+        if "mammary gland" in ontology_iri:
+            mammary_gland = URIRef("http://purl.obolibrary.org/obo/UBERON_0001911")
+            Class(mammary_gland, graph=g)
+            g.add((mammary_gland, OBOINOWL.id, Literal("UBERON:0001911")))
+            g.add((mammary_gland, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((mammary_gland, CCF.ccf_pref_label, Literal("mammary gland")))
+            g.add((mammary_gland, CCF.ccf_part_of, body))
+
+            left_mammary_gland = URIRef("http://purl.obolibrary.org/obo/FMA_57991")
+            Class(left_mammary_gland, graph=g)
+            g.add((left_mammary_gland, OBOINOWL.id, Literal("FMA:57991")))
+            g.add((left_mammary_gland, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((left_mammary_gland, CCF.ccf_pref_label, Literal("left mammary gland")))
+            g.add((left_mammary_gland, CCF.ccf_part_of, mammary_gland))
+
+            right_mammary_gland = URIRef("http://purl.obolibrary.org/obo/FMA_57987")
+            Class(right_mammary_gland, graph=g)
+            g.add((right_mammary_gland, OBOINOWL.id, Literal("FMA:57987")))
+            g.add((right_mammary_gland, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((right_mammary_gland, CCF.ccf_pref_label, Literal("right mammary gland")))
+            g.add((right_mammary_gland, CCF.ccf_part_of, mammary_gland))
 
         # Some definitions
         Property(DCTERMS.references, baseType=OWL.AnnotationProperty, graph=g)
