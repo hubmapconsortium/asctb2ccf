@@ -20,7 +20,7 @@ class BSOntology:
         self.graph = graph
 
     @staticmethod
-    def new(ontology_iri):
+    def new(organ_name, ontology_iri):
         g = Graph()
         g.bind('ccf', CCF)
         g.bind('obo', OBO)
@@ -51,46 +51,12 @@ class BSOntology:
 
         # Patch classes
         body = URIRef("http://purl.obolibrary.org/obo/UBERON_0013702")
+        Class(body, graph=g)
+        g.add((body, OBOINOWL.id, Literal("UBERON:0013702")))
+        g.add((body, CCF.ccf_asctb_type, Literal("AS")))
+        g.add((body, CCF.ccf_pref_label, Literal("body")))
 
-        if "kidney" in ontology_iri:
-            kidney = URIRef("http://purl.obolibrary.org/obo/UBERON_0002113")
-            Class(kidney, graph=g)
-            g.add((kidney, OBOINOWL.id, Literal("UBERON:0002113")))
-            g.add((kidney, CCF.ccf_asctb_type, Literal("AS")))
-            g.add((kidney, CCF.ccf_pref_label, Literal("kidney")))
-            g.add((kidney, CCF.ccf_part_of, body))
-
-            left_kidney = URIRef("http://purl.obolibrary.org/obo/UBERON_0004538")
-            Class(left_kidney, graph=g)
-            g.add((left_kidney, OBOINOWL.id, Literal("UBERON:0004538")))
-            g.add((left_kidney, CCF.ccf_asctb_type, Literal("AS")))
-            g.add((left_kidney, CCF.ccf_pref_label, Literal("left kidney")))
-            g.add((left_kidney, CCF.ccf_part_of, kidney))
-
-            right_kidney = URIRef("http://purl.obolibrary.org/obo/UBERON_0004539")
-            Class(right_kidney, graph=g)
-            g.add((right_kidney, OBOINOWL.id, Literal("UBERON:0004539")))
-            g.add((right_kidney, CCF.ccf_asctb_type, Literal("AS")))
-            g.add((right_kidney, CCF.ccf_pref_label, Literal("right kidney")))
-            g.add((right_kidney, CCF.ccf_part_of, kidney))
-
-        if "pelvis" in ontology_iri:
-            pelvis = URIRef("http://purl.obolibrary.org/obo/UBERON_0001270")
-            Class(pelvis, graph=g)
-            g.add((pelvis, OBOINOWL.id, Literal("UBERON:0001270")))
-            g.add((pelvis, CCF.ccf_asctb_type, Literal("AS")))
-            g.add((pelvis, CCF.ccf_pref_label, Literal("pelvis")))
-            g.add((pelvis, CCF.ccf_part_of, body))
-
-        if "bone_marrow" in ontology_iri:
-            bone_marrow = URIRef("http://purl.obolibrary.org/obo/UBERON_0002371")
-            Class(bone_marrow, graph=g)
-            g.add((bone_marrow, OBOINOWL.id, Literal("UBERON:0002371")))
-            g.add((bone_marrow, CCF.ccf_asctb_type, Literal("AS")))
-            g.add((bone_marrow, CCF.ccf_pref_label, Literal("bone marrow")))
-            g.add((bone_marrow, CCF.ccf_part_of, body))
-
-        if "blood" in ontology_iri:
+        if organ_name == "Blood":
             blood = URIRef("http://purl.obolibrary.org/obo/UBERON_0000178")
             Class(blood, graph=g)
             g.add((blood, OBOINOWL.id, Literal("UBERON:0000178")))
@@ -98,7 +64,7 @@ class BSOntology:
             g.add((blood, CCF.ccf_pref_label, Literal("blood")))
             g.add((blood, CCF.ccf_part_of, body))
 
-        if "blood_vasculature" in ontology_iri:
+        elif organ_name == "BloodVasculature":
             blood_vas = URIRef("http://purl.obolibrary.org/obo/UBERON_0004537")
             Class(blood_vas, graph=g)
             g.add((blood_vas, OBOINOWL.id, Literal("UBERON:0004537")))
@@ -106,37 +72,23 @@ class BSOntology:
             g.add((blood_vas, CCF.ccf_pref_label, Literal("blood vasculature")))
             g.add((blood_vas, CCF.ccf_part_of, body))
 
-        if "lung" in ontology_iri:
-            lung = URIRef("http://purl.obolibrary.org/obo/UBERON_0002048")
-            Class(lung, graph=g)
-            g.add((lung, OBOINOWL.id, Literal("UBERON:0002048")))
-            g.add((lung, CCF.ccf_asctb_type, Literal("AS")))
-            g.add((lung, CCF.ccf_pref_label, Literal("lung")))
-            g.add((lung, CCF.ccf_part_of, body))
+        elif organ_name == "BoneMarrow":
+            bone_marrow = URIRef("http://purl.obolibrary.org/obo/UBERON_0002371")
+            Class(bone_marrow, graph=g)
+            g.add((bone_marrow, OBOINOWL.id, Literal("UBERON:0002371")))
+            g.add((bone_marrow, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((bone_marrow, CCF.ccf_pref_label, Literal("bone marrow")))
+            g.add((bone_marrow, CCF.ccf_part_of, body))
 
-            respiratory = URIRef("http://purl.obolibrary.org/obo/UBERON_0001004")
-            Class(respiratory, graph=g)
-            g.add((respiratory, OBOINOWL.id, Literal("UBERON:0001004")))
-            g.add((respiratory, CCF.ccf_asctb_type, Literal("AS")))
-            g.add((respiratory, CCF.ccf_pref_label, Literal("respiratory system")))
-            g.add((respiratory, CCF.ccf_part_of, lung))
+        elif organ_name == "Brain":
+            brain = URIRef("http://purl.obolibrary.org/obo/UBERON_0000955")
+            Class(brain, graph=g)
+            g.add((brain, OBOINOWL.id, Literal("UBERON:0000955")))
+            g.add((brain, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((brain, CCF.ccf_pref_label, Literal("brain")))
+            g.add((brain, CCF.ccf_part_of, body))
 
-        if "lymph_node" in ontology_iri:
-            lymph_node = URIRef("http://purl.obolibrary.org/obo/UBERON_0000029")
-            Class(lymph_node, graph=g)
-            g.add((lymph_node, OBOINOWL.id, Literal("UBERON:0000029")))
-            g.add((lymph_node, CCF.ccf_asctb_type, Literal("AS")))
-            g.add((lymph_node, CCF.ccf_pref_label, Literal("lymph node")))
-            g.add((lymph_node, CCF.ccf_part_of, body))
-
-            mesenteric_ln = URIRef("http://purl.obolibrary.org/obo/UBERON_0002509")
-            Class(mesenteric_ln, graph=g)
-            g.add((mesenteric_ln, OBOINOWL.id, Literal("UBERON:0002509")))
-            g.add((mesenteric_ln, CCF.ccf_asctb_type, Literal("AS")))
-            g.add((mesenteric_ln, CCF.ccf_pref_label, Literal("mesenteric lymph node")))
-            g.add((mesenteric_ln, CCF.ccf_part_of, lymph_node))
-
-        if "eye" in ontology_iri:
+        elif organ_name == "Eye":
             eye = URIRef("http://purl.obolibrary.org/obo/UBERON_0000970")
             Class(eye, graph=g)
             g.add((eye, OBOINOWL.id, Literal("UBERON:0000970")))
@@ -158,7 +110,7 @@ class BSOntology:
             g.add((right_eye, CCF.ccf_pref_label, Literal("right eye")))
             g.add((right_eye, CCF.ccf_part_of, eye))
 
-        if "fallopian_tube" in ontology_iri:
+        elif organ_name == "FallopianTube":
             fallopian_tb = URIRef("http://purl.obolibrary.org/obo/UBERON_0003889")
             Class(fallopian_tb, graph=g)
             g.add((fallopian_tb, OBOINOWL.id, Literal("UBERON:0003889")))
@@ -181,7 +133,37 @@ class BSOntology:
             g.add((right_tube, CCF.ccf_pref_label, Literal("right fallopian tube")))
             g.add((right_tube, CCF.ccf_part_of, fallopian_tb))
 
-        if "knee" in ontology_iri:
+        elif organ_name == "Heart":
+            heart = URIRef("http://purl.obolibrary.org/obo/UBERON_0000948")
+            Class(heart, graph=g)
+            g.add((heart, OBOINOWL.id, Literal("UBERON:0000948")))
+            g.add((heart, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((heart, CCF.ccf_pref_label, Literal("heart")))
+            g.add((heart, CCF.ccf_part_of, body))
+
+        elif organ_name == "Kidney":
+            kidney = URIRef("http://purl.obolibrary.org/obo/UBERON_0002113")
+            Class(kidney, graph=g)
+            g.add((kidney, OBOINOWL.id, Literal("UBERON:0002113")))
+            g.add((kidney, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((kidney, CCF.ccf_pref_label, Literal("kidney")))
+            g.add((kidney, CCF.ccf_part_of, body))
+
+            left_kidney = URIRef("http://purl.obolibrary.org/obo/UBERON_0004538")
+            Class(left_kidney, graph=g)
+            g.add((left_kidney, OBOINOWL.id, Literal("UBERON:0004538")))
+            g.add((left_kidney, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((left_kidney, CCF.ccf_pref_label, Literal("left kidney")))
+            g.add((left_kidney, CCF.ccf_part_of, kidney))
+
+            right_kidney = URIRef("http://purl.obolibrary.org/obo/UBERON_0004539")
+            Class(right_kidney, graph=g)
+            g.add((right_kidney, OBOINOWL.id, Literal("UBERON:0004539")))
+            g.add((right_kidney, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((right_kidney, CCF.ccf_pref_label, Literal("right kidney")))
+            g.add((right_kidney, CCF.ccf_part_of, kidney))
+
+        elif organ_name == "Knee":
             knee = URIRef("http://purl.obolibrary.org/obo/UBERON_0001465")
             Class(knee, graph=g)
             g.add((knee, OBOINOWL.id, Literal("UBERON:0001465")))
@@ -203,7 +185,61 @@ class BSOntology:
             g.add((right_knee, CCF.ccf_pref_label, Literal("right knee")))
             g.add((right_knee, CCF.ccf_part_of, knee))
 
-        if "ovary" in ontology_iri:
+        elif organ_name == "LargeIntestine":
+            large_intestine = URIRef("http://purl.obolibrary.org/obo/UBERON_0000059")
+            Class(large_intestine, graph=g)
+            g.add((large_intestine, OBOINOWL.id, Literal("UBERON:0000059")))
+            g.add((large_intestine, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((large_intestine, CCF.ccf_pref_label, Literal("large intestine")))
+            g.add((large_intestine, CCF.ccf_part_of, body))
+
+        elif organ_name == "Liver":
+            liver = URIRef("http://purl.obolibrary.org/obo/UBERON_0002107")
+            Class(liver, graph=g)
+            g.add((liver, OBOINOWL.id, Literal("UBERON:0002107")))
+            g.add((liver, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((liver, CCF.ccf_pref_label, Literal("liver")))
+            g.add((liver, CCF.ccf_part_of, body))
+
+        elif organ_name == "Lung":
+            lung = URIRef("http://purl.obolibrary.org/obo/UBERON_0002048")
+            Class(lung, graph=g)
+            g.add((lung, OBOINOWL.id, Literal("UBERON:0002048")))
+            g.add((lung, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((lung, CCF.ccf_pref_label, Literal("lung")))
+            g.add((lung, CCF.ccf_part_of, body))
+
+            respiratory = URIRef("http://purl.obolibrary.org/obo/UBERON_0001004")
+            Class(respiratory, graph=g)
+            g.add((respiratory, OBOINOWL.id, Literal("UBERON:0001004")))
+            g.add((respiratory, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((respiratory, CCF.ccf_pref_label, Literal("respiratory system")))
+            g.add((respiratory, CCF.ccf_part_of, lung))
+
+        elif organ_name == "LymphNode":
+            lymph_node = URIRef("http://purl.obolibrary.org/obo/UBERON_0000029")
+            Class(lymph_node, graph=g)
+            g.add((lymph_node, OBOINOWL.id, Literal("UBERON:0000029")))
+            g.add((lymph_node, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((lymph_node, CCF.ccf_pref_label, Literal("lymph node")))
+            g.add((lymph_node, CCF.ccf_part_of, body))
+
+            mesenteric_ln = URIRef("http://purl.obolibrary.org/obo/UBERON_0002509")
+            Class(mesenteric_ln, graph=g)
+            g.add((mesenteric_ln, OBOINOWL.id, Literal("UBERON:0002509")))
+            g.add((mesenteric_ln, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((mesenteric_ln, CCF.ccf_pref_label, Literal("mesenteric lymph node")))
+            g.add((mesenteric_ln, CCF.ccf_part_of, lymph_node))
+
+        elif organ_name == "LymphVasculature":
+            lymph_vas = URIRef("http://purl.obolibrary.org/obo/UBERON_0004536")
+            Class(lymph_vas, graph=g)
+            g.add((lymph_vas, OBOINOWL.id, Literal("UBERON:0004536")))
+            g.add((lymph_vas, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((lymph_vas, CCF.ccf_pref_label, Literal("lymph vasculature")))
+            g.add((lymph_vas, CCF.ccf_part_of, body))
+
+        elif organ_name == "Ovary":
             ovary = URIRef("http://purl.obolibrary.org/obo/UBERON_0000992")
             Class(ovary, graph=g)
             g.add((ovary, OBOINOWL.id, Literal("UBERON:0000992")))
@@ -225,7 +261,71 @@ class BSOntology:
             g.add((right_ovary, CCF.ccf_pref_label, Literal("right ovary")))
             g.add((right_ovary, CCF.ccf_part_of, ovary))
 
-        if "ureter" in ontology_iri:
+        elif organ_name == "Pancreas":
+            pancreas = URIRef("http://purl.obolibrary.org/obo/UBERON_0001264")
+            Class(pancreas, graph=g)
+            g.add((pancreas, OBOINOWL.id, Literal("UBERON:0001264")))
+            g.add((pancreas, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((pancreas, CCF.ccf_pref_label, Literal("pancreas")))
+            g.add((pancreas, CCF.ccf_part_of, body))
+
+        elif organ_name == "PeripheralNervousSystem":
+            pns = URIRef("http://purl.obolibrary.org/obo/UBERON_0000010")
+            Class(pns, graph=g)
+            g.add((pns, OBOINOWL.id, Literal("UBERON:0000010")))
+            g.add((pns, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((pns, CCF.ccf_pref_label, Literal("peripheral nervous system")))
+            g.add((pns, CCF.ccf_part_of, body))
+
+        elif organ_name == "Placenta":
+            placenta = URIRef("http://purl.obolibrary.org/obo/UBERON_0001987")
+            Class(placenta, graph=g)
+            g.add((placenta, OBOINOWL.id, Literal("UBERON:0001987")))
+            g.add((placenta, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((placenta, CCF.ccf_pref_label, Literal("placenta")))
+            g.add((placenta, CCF.ccf_part_of, body))
+
+        elif organ_name == "Prostate":
+            prostate = URIRef("http://purl.obolibrary.org/obo/UBERON_0002367")
+            Class(prostate, graph=g)
+            g.add((prostate, OBOINOWL.id, Literal("UBERON:0002367")))
+            g.add((prostate, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((prostate, CCF.ccf_pref_label, Literal("prostate")))
+            g.add((prostate, CCF.ccf_part_of, body))
+
+        elif organ_name == "Skin":
+            skin = URIRef("http://purl.obolibrary.org/obo/UBERON_0001003")
+            Class(skin, graph=g)
+            g.add((skin, OBOINOWL.id, Literal("UBERON:0001003")))
+            g.add((skin, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((skin, CCF.ccf_pref_label, Literal("skin")))
+            g.add((skin, CCF.ccf_part_of, body))
+
+        elif organ_name == "SmallIntestine":
+            small_intestine = URIRef("http://purl.obolibrary.org/obo/UBERON_0002108")
+            Class(small_intestine, graph=g)
+            g.add((small_intestine, OBOINOWL.id, Literal("UBERON:0002108")))
+            g.add((small_intestine, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((small_intestine, CCF.ccf_pref_label, Literal("small intestine")))
+            g.add((small_intestine, CCF.ccf_part_of, body))
+
+        elif organ_name == "Spleen":
+            spleen = URIRef("http://purl.obolibrary.org/obo/UBERON_0002106")
+            Class(spleen, graph=g)
+            g.add((spleen, OBOINOWL.id, Literal("UBERON:0002106")))
+            g.add((spleen, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((spleen, CCF.ccf_pref_label, Literal("spleen")))
+            g.add((spleen, CCF.ccf_part_of, body))
+
+        elif organ_name == "Thymus":
+            thymus = URIRef("http://purl.obolibrary.org/obo/UBERON_0002370")
+            Class(thymus, graph=g)
+            g.add((thymus, OBOINOWL.id, Literal("UBERON:0002370")))
+            g.add((thymus, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((thymus, CCF.ccf_pref_label, Literal("thymus")))
+            g.add((thymus, CCF.ccf_part_of, body))
+
+        elif organ_name == "Ureter":
             ureter = URIRef("http://purl.obolibrary.org/obo/UBERON_0000056")
             Class(ureter, graph=g)
             g.add((ureter, OBOINOWL.id, Literal("UBERON:0000056")))
@@ -247,7 +347,23 @@ class BSOntology:
             g.add((right_ureter, CCF.ccf_pref_label, Literal("right ureter")))
             g.add((right_ureter, CCF.ccf_part_of, ureter))
 
-        if "spinal_cord" in ontology_iri:
+        elif organ_name == "UrinaryBladder":
+            urinary_bladder = URIRef("http://purl.obolibrary.org/obo/UBERON_0001255")
+            Class(urinary_bladder, graph=g)
+            g.add((urinary_bladder, OBOINOWL.id, Literal("UBERON:0001255")))
+            g.add((urinary_bladder, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((urinary_bladder, CCF.ccf_pref_label, Literal("urinary bladder")))
+            g.add((urinary_bladder, CCF.ccf_part_of, body))
+
+        elif organ_name == "Uterus":
+            uterus = URIRef("http://purl.obolibrary.org/obo/UBERON_0000995")
+            Class(uterus, graph=g)
+            g.add((uterus, OBOINOWL.id, Literal("UBERON:0000995")))
+            g.add((uterus, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((uterus, CCF.ccf_pref_label, Literal("uterus")))
+            g.add((uterus, CCF.ccf_part_of, body))
+
+        elif organ_name == "SpinalCord":
             spinal_cord = URIRef("http://purl.obolibrary.org/obo/UBERON_0002240")
             Class(spinal_cord, graph=g)
             g.add((spinal_cord, OBOINOWL.id, Literal("UBERON:0002240")))
@@ -255,15 +371,7 @@ class BSOntology:
             g.add((spinal_cord, CCF.ccf_pref_label, Literal("spinal cord")))
             g.add((spinal_cord, CCF.ccf_part_of, body))
 
-        if "breast" in ontology_iri:
-            breast = URIRef("http://purl.obolibrary.org/obo/UBERON_0000310")
-            Class(breast, graph=g)
-            g.add((breast, OBOINOWL.id, Literal("UBERON:0000310")))
-            g.add((breast, CCF.ccf_asctb_type, Literal("AS")))
-            g.add((breast, CCF.ccf_pref_label, Literal("breast")))
-            g.add((breast, CCF.ccf_part_of, body))
-
-        if "mammary gland" in ontology_iri:
+        elif organ_name == "MammaryGland":
             mammary_gland = URIRef("http://purl.obolibrary.org/obo/UBERON_0001911")
             Class(mammary_gland, graph=g)
             g.add((mammary_gland, OBOINOWL.id, Literal("UBERON:0001911")))
@@ -284,6 +392,21 @@ class BSOntology:
             g.add((right_mammary_gland, CCF.ccf_asctb_type, Literal("AS")))
             g.add((right_mammary_gland, CCF.ccf_pref_label, Literal("right mammary gland")))
             g.add((right_mammary_gland, CCF.ccf_part_of, mammary_gland))
+
+            breast = URIRef("http://purl.obolibrary.org/obo/UBERON_0000310")
+            Class(breast, graph=g)
+            g.add((breast, OBOINOWL.id, Literal("UBERON:0000310")))
+            g.add((breast, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((breast, CCF.ccf_pref_label, Literal("breast")))
+            g.add((breast, CCF.ccf_part_of, body))
+
+        elif organ_name == "Pelvis":
+            pelvis = URIRef("http://purl.obolibrary.org/obo/UBERON_0001270")
+            Class(pelvis, graph=g)
+            g.add((pelvis, OBOINOWL.id, Literal("UBERON:0001270")))
+            g.add((pelvis, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((pelvis, CCF.ccf_pref_label, Literal("pelvis")))
+            g.add((pelvis, CCF.ccf_part_of, body))
 
         # Some definitions
         Property(DCTERMS.references, baseType=OWL.AnnotationProperty, graph=g)

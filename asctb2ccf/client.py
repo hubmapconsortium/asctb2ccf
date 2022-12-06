@@ -18,28 +18,6 @@ class AsctbReporterClient:
     _OUTPUT = "output"
     _CSV_URL = "csvUrl"
 
-    def __init__(self, gid_map):
-        self.gid_map = gid_map
-
-    def get_data_by_parameters(self,
-                               organ_name,
-                               version_tag="latest",
-                               format="json"):
-        """Returns the ASCT+B table in a specific output format given
-           the organ name and the version tag
-
-        Args:
-            organ_name (str): The human organ name.
-            version_tag (str): The version tag (default="latest")
-            format (str): The output format (default="json")
-
-        Returns:
-            The ASCT+B table in the given output format
-        """
-        export_csv_url =\
-            self._get_export_csv_url_by_parameters(organ_name, version_tag)
-        return self._get_data(export_csv_url, format)
-
     def get_data_by_gsheet_url(self,
                                gsheet_url,
                                format="json"):
@@ -66,10 +44,6 @@ class AsctbReporterClient:
         url = f"{base_endpoint}?{options}"
         response = json_handler(url)
         return response
-
-    def _get_export_csv_url_by_parameters(self, organ_name, version_tag):
-        export_url = self.gid_map[organ_name][version_tag]
-        return quote_plus(export_url)
 
     def _get_export_csv_url_by_gsheet_url(self, gsheet_url):
         export_url = gsheet_url.replace('edit#', 'export?')
