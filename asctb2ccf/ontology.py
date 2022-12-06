@@ -379,14 +379,14 @@ class BSOntology:
             g.add((mammary_gland, CCF.ccf_pref_label, Literal("mammary gland")))
             g.add((mammary_gland, CCF.ccf_part_of, body))
 
-            left_mammary_gland = URIRef("http://purl.obolibrary.org/obo/FMA_57991")
+            left_mammary_gland = URIRef("http://purl.org/sig/ont/fma/fma57991")
             Class(left_mammary_gland, graph=g)
             g.add((left_mammary_gland, OBOINOWL.id, Literal("FMA:57991")))
             g.add((left_mammary_gland, CCF.ccf_asctb_type, Literal("AS")))
             g.add((left_mammary_gland, CCF.ccf_pref_label, Literal("left mammary gland")))
             g.add((left_mammary_gland, CCF.ccf_part_of, mammary_gland))
 
-            right_mammary_gland = URIRef("http://purl.obolibrary.org/obo/FMA_57987")
+            right_mammary_gland = URIRef("http://purl.org/sig/ont/fma/fma57987")
             Class(right_mammary_gland, graph=g)
             g.add((right_mammary_gland, OBOINOWL.id, Literal("FMA:57987")))
             g.add((right_mammary_gland, CCF.ccf_asctb_type, Literal("AS")))
