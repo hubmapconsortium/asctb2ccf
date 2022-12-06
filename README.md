@@ -22,9 +22,10 @@ $ asctb2cct --organ-name Kidney --ontology-iri http://purl.org/ccf/data/asctb-ki
 ```
 
 Possible options for the `--organ-name` argument are:
+* `Blood`
+* `BloodVasculature`
 * `BoneMarrow`
 * `Brain`
-* `Blood`
 * `Eye`
 * `FallopianTube`
 * `Heart`
@@ -35,15 +36,18 @@ Possible options for the `--organ-name` argument are:
 * `Lung`
 * `LymphNode`
 * `LymphVasculature`
+* `MammaryGland`
 * `Ovary`
 * `Pancreas`
+* `Pelvis`
 * `PeripheralNervousSystem`
+* `Placenta`
 * `Prostate`
 * `Skin`
 * `SmallIntestine`
+* `SpinalCord`
 * `Spleen`
 * `Thymus`
 * `Ureter`
 * `UrinaryBladder`
 * `Uterus`
-* `BloodVasculature`
