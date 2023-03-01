@@ -12,7 +12,7 @@ class AsctbReporterClient:
         the organ name.
     """
 
-    _BASE_URL = "https://asctb-api.herokuapp.com"
+    _BASE_URL = "https://mmpyikxkcp.us-east-2.awsapprunner.com"
     _VERSION = "v2"
     _CSV = "csv"
     _OUTPUT = "output"

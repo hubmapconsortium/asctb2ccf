@@ -497,6 +497,7 @@ class BSOntology:
                 term_name = marker['rdfs_label']
             pref_label = Literal(term_name)
             asctb_type = Literal("BM")
+            biomarker_type = Literal(marker['b_type'])
 
             # If not a provisional term, the rdfs:label and rdf:SubClassOf rels
             # will be obtained from the reference ontology on another pipeline.
@@ -504,7 +505,8 @@ class BSOntology:
                 bm_iri,
                 annotations=[(OBOINOWL.id, [term_id]),
                              (CCF.ccf_pref_label, [pref_label]),
-                             (CCF.ccf_asctb_type, [asctb_type])])
+                             (CCF.ccf_asctb_type, [asctb_type]),
+                             (CCF.ccf_biomarker_type, [biomarker_type])])
 
             # Otherwise, the rdfs:label equals to the preferred label
             if is_provisional:
