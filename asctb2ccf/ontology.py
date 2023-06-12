@@ -430,6 +430,14 @@ class BSOntology:
             g.add((right_palatine_tonsil, CCF.ccf_pref_label, Literal("right palatine tonsil")))
             g.add((right_palatine_tonsil, CCF.ccf_part_of, palatine_tonsil))
 
+        elif organ_name == "Larynx":
+            larynx = URIRef("http://purl.obolibrary.org/obo/UBERON_0001737")
+            Class(larynx, graph=g)
+            g.add((larynx, OBOINOWL.id, Literal("UBERON:0001737")))
+            g.add((larynx, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((larynx, CCF.ccf_pref_label, Literal("larynx")))
+            g.add((larynx, CCF.ccf_part_of, body))
+
         # Some definitions
         Property(DCTERMS.references, baseType=OWL.AnnotationProperty, graph=g)
         Property(OBO.IAO_0000115, baseType=OWL.AnnotationProperty, graph=g)
