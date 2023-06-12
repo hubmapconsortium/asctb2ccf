@@ -408,7 +408,7 @@ class BSOntology:
             g.add((pelvis, CCF.ccf_pref_label, Literal("pelvis")))
             g.add((pelvis, CCF.ccf_part_of, body))
 
-        elif organ_name == "Tonsil":
+        elif organ_name == "PalatineTonsil":
             tonsil = URIRef("http://purl.obolibrary.org/obo/UBERON_0002372")
             Class(tonsil, graph=g)
             g.add((tonsil, OBOINOWL.id, Literal("UBERON:0002372")))
@@ -428,7 +428,7 @@ class BSOntology:
             g.add((right_palatine_tonsil, OBOINOWL.id, Literal("FMA:54973")))
             g.add((right_palatine_tonsil, CCF.ccf_asctb_type, Literal("AS")))
             g.add((right_palatine_tonsil, CCF.ccf_pref_label, Literal("right palatine tonsil")))
-            g.add((right_palatine_tonsil, CCF.ccf_part_of, tonsil))           
+            g.add((right_palatine_tonsil, CCF.ccf_part_of, tonsil))
 
         # Some definitions
         Property(DCTERMS.references, baseType=OWL.AnnotationProperty, graph=g)
