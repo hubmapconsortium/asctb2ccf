@@ -408,6 +408,28 @@ class BSOntology:
             g.add((pelvis, CCF.ccf_pref_label, Literal("pelvis")))
             g.add((pelvis, CCF.ccf_part_of, body))
 
+        elif organ_name == "Tonsil":
+            tonsil = URIRef("http://purl.obolibrary.org/obo/UBERON_0002372")
+            Class(tonsil, graph=g)
+            g.add((tonsil, OBOINOWL.id, Literal("UBERON:0002372")))
+            g.add((tonsil, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((tonsil, CCF.ccf_pref_label, Literal("tonsil")))
+            g.add((tonsil, CCF.ccf_part_of, body))
+
+            left_palatine_tonsil = URIRef("http://purl.org/sig/ont/fma/fma54974")
+            Class(left_palatine_tonsil, graph=g)
+            g.add((left_palatine_tonsil, OBOINOWL.id, Literal("FMA:54974")))
+            g.add((left_palatine_tonsil, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((left_palatine_tonsil, CCF.ccf_pref_label, Literal("left palatine tonsil")))
+            g.add((left_palatine_tonsil, CCF.ccf_part_of, tonsil))
+
+            right_palatine_tonsil = URIRef("http://purl.org/sig/ont/fma/fma54973")
+            Class(right_palatine_tonsil, graph=g)
+            g.add((right_palatine_tonsil, OBOINOWL.id, Literal("FMA:54973")))
+            g.add((right_palatine_tonsil, CCF.ccf_asctb_type, Literal("AS")))
+            g.add((right_palatine_tonsil, CCF.ccf_pref_label, Literal("right palatine tonsil")))
+            g.add((right_palatine_tonsil, CCF.ccf_part_of, tonsil))           
+
         # Some definitions
         Property(DCTERMS.references, baseType=OWL.AnnotationProperty, graph=g)
         Property(OBO.IAO_0000115, baseType=OWL.AnnotationProperty, graph=g)
