@@ -51,3 +51,4 @@ Possible options for the `--organ-name` argument are:
 * `Ureter`
 * `UrinaryBladder`
 * `Uterus`
+* `PalatineTonsil`
