@@ -35,19 +35,19 @@ class BSOntology:
 
         # Default class hierarchy
         uberon_entity = URIRef("http://purl.obolibrary.org/obo/UBERON_0001062")
-        Class(uberon_entity, subClassOf=[CCF.anatomical_structure], graph=g)
+        Class(uberon_entity, subClassOf=[CCF.AnatomicalStructure], graph=g)
 
         fma_entity = URIRef("http://purl.org/sig/ont/fma/fma62955")
-        Class(fma_entity, subClassOf=[CCF.anatomical_structure], graph=g)
+        Class(fma_entity, subClassOf=[CCF.AnatomicalStructure], graph=g)
 
         cl_cell_type = URIRef("http://purl.obolibrary.org/obo/CL_0000000")
-        Class(cl_cell_type, subClassOf=[CCF.cell_type], graph=g)
+        Class(cl_cell_type, subClassOf=[CCF.CellType], graph=g)
 
         lmha_cell_type = URIRef("http://purl.obolibrary.org/obo/LMHA_00135")
-        Class(lmha_cell_type, subClassOf=[CCF.cell_type], graph=g)
+        Class(lmha_cell_type, subClassOf=[CCF.CellType], graph=g)
 
         hgnc_gene = URIRef("http://purl.bioontology.org/ontology/HGNC/gene")
-        Class(hgnc_gene, subClassOf=[CCF.biomarker], graph=g)
+        Class(hgnc_gene, subClassOf=[CCF.Biomarker], graph=g)
 
         # Patch classes
         body = URIRef("http://purl.obolibrary.org/obo/UBERON_0013702")
@@ -479,7 +479,7 @@ class BSOntology:
                 self._add_term_to_graph(
                     as_iri,
                     label=pref_label,
-                    subClassOf=CCF.anatomical_structure)
+                    subClassOf=CCF.AnatomicalStructure)
                 self._add_provisional_definition(as_iri)
 
         return BSOntology(self.graph)
@@ -510,7 +510,7 @@ class BSOntology:
                 self._add_term_to_graph(
                     ct_iri,
                     label=pref_label,
-                    subClassOf=CCF.cell_type)
+                    subClassOf=CCF.CellType)
                 self._add_provisional_definition(ct_iri)
 
         return BSOntology(self.graph)
@@ -542,7 +542,7 @@ class BSOntology:
             if is_provisional:
                 self._add_term_to_graph(
                     bm_iri,
-                    subClassOf=CCF.biomarker,
+                    subClassOf=CCF.Biomarker,
                     label=pref_label)
                 self._add_provisional_definition(bm_iri)
 

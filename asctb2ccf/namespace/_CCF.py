@@ -25,9 +25,9 @@ class CCF(DefinedNamespace):
     ccf_is_provisional: URIRef
 
     # http://www.w3.org/2002/07/owl#Class
-    anatomical_structure: URIRef
-    cell_type: URIRef
-    biomarker: URIRef
+    AnatomicalStructure: URIRef
+    CellType: URIRef
+    Biomarker: URIRef
     characterizing_biomarker_set: URIRef
 
     _NS = Namespace("http://purl.org/ccf/")
